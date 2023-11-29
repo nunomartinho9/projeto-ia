@@ -28,8 +28,8 @@
 (defun tabuleiro-jogado ()
 "Tabuleiro de teste igual ao anterior mas tendo sido colocado o cavalo na posi��o: i=0 e j=0"
   '(
-    (T 25 54 89 21 8 36 14 41 96) 
-    (78 47 56 23 5 49 13 12 26 60) 
+    (NIL 25 54 89 21 8 36 14 41 96) 
+    (78 47 56 23 5 T 13 12 26 60) 
     (0 27 17 83 34 93 74 52 45 80) 
     (69 9 77 95 55 39 91 73 57 30) 
     (24 15 22 86 1 11 68 79 76 72) 
@@ -59,7 +59,8 @@ tabuleiro"
 (defun celula (lin col board)
 "Função que recebe dois índices e o tabuleiro e retorna o valor presente nessa célula do
 tabuleiro"
-  (linha col (linha lin board))
+    (if (or (< lin 0) (< col 0)) NIL (linha col (linha lin board)))
+  
 )
 
 ;; (lista-numeros)
@@ -140,6 +141,137 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
   )
 )
   
+
+;;operadores 
+(defun operador-1 (tabuleiro)
+    "mover o cavalo 2 casas para baixo e uma para a esquerda"
+    (let (
+          (lin (car (posicao-cavalo tabuleiro)))
+          (col (cadr (posicao-cavalo tabuleiro)))
+         )
+        
+        (cond
+         ((eq (celula (+ lin 2) (1- col) tabuleiro) NIL) NIL)
+         (t (substituir (+ lin 2) (1- col) (substituir lin col tabuleiro) T))
+        )
+    )
+    
+    )
+
+
+(defun operador-2 (tabuleiro)
+    "mover o cavalo 2 casas para baixo e uma para a direita"
+    (let (
+          (lin (car (posicao-cavalo tabuleiro)))
+          (col (cadr (posicao-cavalo tabuleiro)))
+         )
+        
+        (cond
+         ((eq (celula (+ lin 2) (1+ col) tabuleiro) NIL) NIL)
+         (t (substituir (+ lin 2) (1+ col) (substituir lin col tabuleiro) T))
+        )
+    )
+    
+    )
+
+
+(defun operador-3 (tabuleiro)
+    "mover o cavalo 1 casa para baixo e duas para a direita"
+    (let (
+          (lin (car (posicao-cavalo tabuleiro)))
+          (col (cadr (posicao-cavalo tabuleiro)))
+         )
+        
+        (cond
+         ((eq (celula (1+ lin) (+ col 2) tabuleiro) NIL) NIL)
+         (t (substituir (1+ lin) (+ col 2) (substituir lin col tabuleiro) T))
+        )
+    )
+    
+    )
+
+
+(defun operador-4 (tabuleiro)
+    "mover o cavalo 1 casa para cima e duas para a direita"
+    (let (
+          (lin (car (posicao-cavalo tabuleiro)))
+          (col (cadr (posicao-cavalo tabuleiro)))
+         )
+        
+        (cond
+         ((eq (celula (1- lin) (+ col 2) tabuleiro) NIL) NIL)
+         (t (substituir (1- lin) (+ col 2) (substituir lin col tabuleiro) T))
+        )
+    )
+    
+    )
+
+(defun operador-5 (tabuleiro)
+    "mover o cavalo 2 casa para cima e 1 para a direita"
+    (let (
+          (lin (car (posicao-cavalo tabuleiro)))
+          (col (cadr (posicao-cavalo tabuleiro)))
+         )
+        
+        (cond
+         ((eq (celula (+ lin 2) (1+ col) tabuleiro) NIL) NIL)
+         (t (substituir (+ lin 2) (1+ col) (substituir lin col tabuleiro) T))
+        )
+    )
+    
+    )
+
+(defun operador-6 (tabuleiro)
+    "mover o cavalo 2 casa para cima e 1 para a esquerda"
+    (let (
+          (lin (car (posicao-cavalo tabuleiro)))
+          (col (cadr (posicao-cavalo tabuleiro)))
+         )
+        
+        (cond
+         ((eq (celula (+ lin 2) (1- col) tabuleiro) NIL) NIL)
+         (t (substituir (+ lin 2) (1- col) (substituir lin col tabuleiro) T))
+        )
+    )
+    
+    )
+
+(defun operador-7 (tabuleiro)
+    "mover o cavalo 1 casa para cima e 2 para a esquerda"
+    (let (
+          (lin (car (posicao-cavalo tabuleiro)))
+          (col (cadr (posicao-cavalo tabuleiro)))
+         )
+        
+        (cond
+         ((eq (celula (1+ lin) (- col 2) tabuleiro) NIL) NIL)
+         (t (substituir (1+ lin) (- col 2) (substituir lin col tabuleiro) T))
+        )
+    )
+    
+    )
+
+
+(defun operador-8 (tabuleiro)
+    "mover o cavalo 1 casa para baixo e 2 para a esquerda"
+    (let (
+          (lin (car (posicao-cavalo tabuleiro)))
+          (col (cadr (posicao-cavalo tabuleiro)))
+         )
+        
+        (cond
+         ((eq (celula (1- lin) (- col 2) tabuleiro) NIL) NIL)
+         (t (substituir (1- lin) (- col 2) (substituir lin col tabuleiro) T))
+        )
+    )
+    
+    )
+
+;; (funcall (car (lista-operadores)) (tabuleiro-jogado))
+;; (print-tabuleiro (funcall (nth 1 (lista-operadores)) (tabuleiro-jogado)))
+(defun lista-operadores ()
+    (list 'operador-1 'operador-2 'operador-3 'operador-4 'operador-5 'operador-6 'operador-7 'operador-8)
+  )
 
 ;; (print-tabuleiro (tabuleiro-teste))
 (defun print-tabuleiro (tabuleiro &optional (stream t))
