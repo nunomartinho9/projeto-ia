@@ -140,12 +140,30 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
   )
 ) 
 
-(defun posicionar-cavalo (tabuleiro)
+;;(contar-casas-validas (linha 0 (tabuleiro-jogado)))
+;;9
 
-  (if (eq nil (posicao-cavalo (tabuleiro-teste))) 
+;;(contar-casas-validas (linha 0 (tabuleiro-teste)))
+;;10
+(defun contar-casas-validas (linha)
+  "Função que conta casas válidas em que o jogador pode jogar"
+  (cond
+   ((null linha) 0)
+   ((eq (car linha) nil) (contar-casas-validas (cdr linha)))
+   (t (1+ (contar-casas-validas (cdr linha))))
+   
+   )
+  )
+
+
+(defun posicionar-cavalo (tabuleiro)
+  "Posicionar o cavalo (T) na primeira linha e numa coluna aleatoria 
+    (devolve o tabuleiro com o cavalo posicionado.)"
+  (if (eq nil (posicao-cavalo tabuleiro)) 
       
-      
-      ;;meter cavalo 
+      ;;meter cavalo numa posicao aleatoria na linha 0 (primeira linha)
+      (substituir 0 (random 
+                      (contar-casas-validas (linha 0 tabuleiro))) tabuleiro T)
       
 
       ;;ja existe cavalo por isso nao fazer nada.
