@@ -49,17 +49,17 @@
         (T (cons (car lista) (remover-se pred (cdr lista))))))
 
 ;; (linha 0 (tabuleiro-teste))
-(defun linha (index board)
+(defun linha (index tabuleiro)
 "Função que recebe um índice e o tabuleiro e retorna uma lista que representa essa linha do 
 tabuleiro"
-  (nth index board)
+  (nth index tabuleiro)
 )
 
 ;;  (celula 0 1 (tabuleiro-teste))
-(defun celula (lin col board)
+(defun celula (lin col tabuleiro)
 "Função que recebe dois índices e o tabuleiro e retorna o valor presente nessa célula do
 tabuleiro"
-    (if (or (< lin 0) (< col 0)) NIL (linha col (linha lin board)))
+    (if (or (< lin 0) (< col 0)) NIL (linha col (linha lin tabuleiro)))
   
 )
 
@@ -127,20 +127,32 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 )
 
 
-
 ;; (posicao-cavalo (tabuleiro-teste))
 ;; (posicao-cavalo (tabuleiro-jogado))
-(defun posicao-cavalo (board &optional (row 0) (column 0))
+(defun posicao-cavalo (tabuleiro &optional (row 0) (column 0))
 "Função que recebe o tabuleiro e devolve a posição (i j) em que se encontra o cavalo."
   (cond
-    ((eq (nth column (car board)) T) (list row column))
-    ((<= (length (car board)) column) (posicao-cavalo (cdr board) (1+  row)))
-    ((car board) (posicao-cavalo board row (1+ column)))
-    (T NIL)
-
+    ((null tabuleiro) nil)
+    ((eq t (celula row column tabuleiro)) (list row column))
+    ((< 9 row) nil)
+    ((< 9 column) (posicao-cavalo tabuleiro (1+ row)))
+    (t (posicao-cavalo tabuleiro row (1+ column)))
   )
-)
+) 
+
+(defun posicionar-cavalo (tabuleiro)
+
+  (if (eq nil (posicao-cavalo (tabuleiro-teste))) 
+      
+      
+      ;;meter cavalo 
+      
+
+      ;;ja existe cavalo por isso nao fazer nada.
+      tabuleiro)
   
+  )
+
 
 ;;operadores 
 (defun operador-1 (tabuleiro)
@@ -267,7 +279,16 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
     
     )
 
+
+
+
+
+
+
+
+
 ;; (funcall (car (lista-operadores)) (tabuleiro-jogado))
+
 ;; (print-tabuleiro (funcall (nth 1 (lista-operadores)) (tabuleiro-jogado)))
 (defun lista-operadores ()
     (list 'operador-1 'operador-2 'operador-3 'operador-4 'operador-5 'operador-6 'operador-7 'operador-8)

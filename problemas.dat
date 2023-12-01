@@ -1,0 +1,76 @@
+("a" 70
+  (
+    (02   20   44   nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  03   30   nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  22   nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+  )
+)
+
+("b" 60
+  (
+    (02   nil  04   nil  06   nil  08   nil  10   nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  03   nil  05   nil  07   nil  09   nil  10 )
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+  )
+)
+
+("c" 270
+  (
+    (01   12   03   23   nil  88   nil  nil  nil  nil)
+    (21   45   43   nil  nil  nil  nil  nil  nil  nil)
+    (nil  56   nil  78   nil  nil  nil  nil  nil  nil)
+    (89   nil  99   54   nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+  )
+)
+
+("d" 600
+  (
+    (98   97   96   95   94   93   92   91   90   89 )
+    (01   02   03   04   05   55   06   07   08   09 )
+    (nil  66   nil  nil  nil  nil  nil  nil  nil  11 )
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  22   nil  nil  nil  nil  nil  33   nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  88   nil  nil  nil  44   nil  nil)
+    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  77   nil  nil  nil  nil  nil)
+    (nil  nil  nil  nil  nil  nil  99   nil  nil  nil)
+  )  
+)
+
+("e" 300
+  (
+    (nil  05   nil  nil  nil  15   nil  nil  nil  25 )
+    (nil  nil  nil  06   nil  nil  nil  16   nil  nil)
+    (nil  04   nil  nil  nil  14   nil  nil  nil  24 )
+    (nil  nil  nil  07   nil  nil  nil  17   nil  nil)
+    (nil  03   nil  nil  nil  13   nil  nil  nil  23 )
+    (nil  nil  nil  08   nil  nil  nil  18   nil  nil)
+    (nil  02   nil  nil  nil  12   nil  nil  nil  22 )
+    (nil  nil  nil  09   nil  nil  nil  19   nil  nil)
+    (nil  01   nil  nil  nil  11   nil  nil  nil  21 )
+    (nil  nil  nil  10   nil  nil  nil  20   nil  nil)
+  )
+)
+
+("f" 2000 ())
