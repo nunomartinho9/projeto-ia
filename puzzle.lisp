@@ -29,7 +29,7 @@
 "Tabuleiro de teste igual ao anterior mas tendo sido colocado o cavalo na posi��o: i=0 e j=0"
   '(
     (NIL 25 54 89 21 8 36 14 41 96) 
-    (78 47 56 23 5 T 13 12 26 60) 
+    (78 T 56 23 5 49 13 12 26 60) 
     (0 27 17 83 34 93 74 52 45 80) 
     (69 9 77 95 55 39 91 73 57 30) 
     (24 15 22 86 1 11 68 79 76 72) 
@@ -127,19 +127,24 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 )
 
 
+(defun posicao-valor (valor tabuleiro &optional (row 0) (column 0))
+  "Função que recebe o tabuleiro e devolve a posição (i j) em que se encontra o (valor)."
+    (cond
+    ((null tabuleiro) nil)
+    ((eq valor (celula row column tabuleiro)) (list row column))
+    ((< 9 row) nil)
+    ((< 9 column) (posicao-valor valor tabuleiro (1+ row)))
+    (t (posicao-valor valor tabuleiro row (1+ column)))
+  )
+  )
+
 ;; (posicao-cavalo (tabuleiro-teste))
 ;; (posicao-cavalo (tabuleiro-jogado))
 
 ;; melhorar isto deixar em vez do 9 trocar por n x n
-(defun posicao-cavalo (tabuleiro &optional (row 0) (column 0))
+(defun posicao-cavalo (tabuleiro)
 "Função que recebe o tabuleiro e devolve a posição (i j) em que se encontra o cavalo."
-  (cond
-    ((null tabuleiro) nil)
-    ((eq t (celula row column tabuleiro)) (list row column))
-    ((< 9 row) nil)
-    ((< 9 column) (posicao-cavalo tabuleiro (1+ row)))
-    (t (posicao-cavalo tabuleiro row (1+ column)))
-  )
+  (posicao-valor T tabuleiro)
 ) 
 
 ;;(contar-casas-validas (linha 0 (tabuleiro-jogado)))
@@ -147,6 +152,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 
 ;;(contar-casas-validas (linha 0 (tabuleiro-teste)))
 ;;10
+;;TODO
 (defun contar-casas-validas (linha)
   "Função que conta casas válidas em que o jogador pode jogar"
   (cond
@@ -168,12 +174,13 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
                       (contar-casas-validas (linha 0 tabuleiro))) tabuleiro T)
       
 
-      ;;ja existe cavalo por isso nao fazer nada.
+      ;;ja existe cavalo por isso nao fazer nada (devolver tabuleiro).
       tabuleiro)
   
   )
 
 (defun n-simetrico (num &optional (sim 0))
+  ""
   (cond
    ( (= num 0) sim)
    (t 
@@ -181,7 +188,21 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
      )
    )
   
+)
+
+(defun posicao-simetrico (num tabuleiro)
+  "Função que recebe o tabuleiro e um numero e devolve a posição (i j) em 
+    que se encontra o numero numetrico de (num)"
+  (posicao-valor (n-simetrico num) tabuleiro)
+)
+
+(defun eliminar-simetrico (num tabuleiro)
+  
+  (let ((coordenadas-sim (posicao-simetrico num tabuleiro)))
+    (substituir (car coordenadas-sim) (cadr coordenadas-sim) tabuleiro)
   )
+  
+)
 
 (defun n-duplo (num &optional (max 99))
   
@@ -189,14 +210,22 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
    ((> num max) nil)
    ((= 0 (rem num 11)) t)
    (t nil)
-   )
-  
   )
+)
+
+(defun lista-duplos ()
+  (list 11 22 33 44 55 66 77 88 99)
+)
+
+(defun posicao-duplos (tabuleiro)
+
+  
+      (mapcar #'(lambda (dp)
+              (posicao-valor dp tabuleiro)
+              ) (lista-duplos)) 
+)
 
 ;;operadores
-
-;; definir eliminar simetrico
-;; definir eliminar um duplo aleatoriamente
 
 (defun mover-cavalo (tabuleiro &optional (valLinha 0) (valColuna 0))
   "Função auxiliar para os operadores."
@@ -204,15 +233,28 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
           (tabuleiroComCavalo (posicionar-cavalo tabuleiro))
           (lin (car (posicao-cavalo tabuleiroComCavalo)))
           (col (cadr (posicao-cavalo tabuleiroComCavalo)))
+          (novaPosicaoCavalo (celula (+ lin valLinha) (+ col valColuna) tabuleiroComCavalo))
          )
         
         (cond
-         ((eq (celula (+ lin valLinha) (+ col valColuna) tabuleiroComCavalo) NIL) NIL)
-         (t (substituir (+ lin valLinha) (+ col valColuna) (substituir lin col tabuleiroComCavalo) T))
+          ((eq novaPosicaoCavalo NIL) NIL) ;;posicao invalida, movimento ilegal.
+          
+          (t 
+            (let* (
+                    (tabuleiroJogada (substituir (+ lin valLinha) (+ col valColuna) (substituir lin col tabuleiroComCavalo) T))
+                    (duplo (nth (random (length (posicao-duplos tabuleiroJogada))) (posicao-duplos tabuleiroJogada)))
+                  )
+                  (if (eq t (n-duplo novaPosicaoCavalo))
+                      (substituir (car duplo) (cadr duplo) tabuleiroJogada) 
+                      (eliminar-simetrico novaPosicaoCavalo tabuleiroJogada)
+                  )
+          )
+       
+          )
         )
     )
 
-  )
+)
 
 
 (defun operador-1 (tabuleiro)
@@ -226,7 +268,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
     "mover o cavalo 2 linhas para baixo e uma coluna para a direita"
     (mover-cavalo tabuleiro 2 1)
     
-    )
+)
 
 
 (defun operador-3 (tabuleiro)
