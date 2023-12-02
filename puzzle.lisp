@@ -129,6 +129,8 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 
 ;; (posicao-cavalo (tabuleiro-teste))
 ;; (posicao-cavalo (tabuleiro-jogado))
+
+;; melhorar isto deixar em vez do 9 trocar por n x n
 (defun posicao-cavalo (tabuleiro &optional (row 0) (column 0))
 "Função que recebe o tabuleiro e devolve a posição (i j) em que se encontra o cavalo."
   (cond
@@ -171,8 +173,31 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
   
   )
 
+(defun n-simetrico (num &optional (sim 0))
+  (cond
+   ( (= num 0) sim)
+   (t 
+     (n-simetrico (/ (- num (rem num 10)) 10) (+(* sim 10) (rem num 10)))
+     )
+   )
+  
+  )
 
-;;operadores 
+(defun n-duplo (num &optional (max 99))
+  
+  (cond 
+   ((> num max) nil)
+   ((= 0 (rem num 11)) t)
+   (t nil)
+   )
+  
+  )
+
+;;operadores
+
+;; definir eliminar simetrico
+;; definir eliminar um duplo aleatoriamente
+
 (defun mover-cavalo (tabuleiro &optional (valLinha 0) (valColuna 0))
   "Função auxiliar para os operadores."
       (let* (
