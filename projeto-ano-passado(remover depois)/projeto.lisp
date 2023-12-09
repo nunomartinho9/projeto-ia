@@ -66,7 +66,7 @@
                             (iniciar)
                         )
                     )
-                    ('2 (progn
+                    (2 (progn
                             (let ((solucao (opcao-algoritmo)))
                                 (progn
                                     (format t "~%Tabuleiro ~a" (first solucao))
@@ -79,7 +79,7 @@
                             (iniciar)
                         )
                     )
-                    ('3 (progn (format t "Obrigado por jogar!~%~%") (quit)))
+                    (3 (progn (format t "Obrigado por jogar!~%~%") (quit)))
                 )
         )
     )

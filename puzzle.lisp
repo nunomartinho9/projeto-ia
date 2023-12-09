@@ -148,7 +148,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
    ((eq (car linha) nil) (contar-casas-validas (cdr linha)))
    (t (1+ (contar-casas-validas (cdr linha))))))
 
-;;(print-tabuleiro (posicionar-cavalo (tabuleiro-teste)))
+;;(format-tabuleiro (posicionar-cavalo (tabuleiro-teste)))
 (defun posicionar-cavalo (tabuleiro)
   "Posicionar o cavalo (T) na primeira linha e numa coluna aleatoria válida
     (devolve o tabuleiro com o cavalo posicionado.)"
@@ -271,8 +271,8 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 
 
 
-;; (print-tabuleiros (usar-operadores (tabuleiro-teste)))
-;; (print-tabuleiros (usar-operadores (tabuleiro-jogado)))
+;; (format-tabuleiros (usar-operadores (tabuleiro-teste)))
+;; (format-tabuleiros (usar-operadores (tabuleiro-jogado)))
 (defun usar-operadores (tabuleiro)
   "Lista de tabuleiros com cada jogada possivel."
   (remover-se #'(lambda (x) (eq x nil))
@@ -286,8 +286,8 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
                (operador-7 tabuleiro)
                (operador-8 tabuleiro))))
 
-;; (print-tabuleiro (tabuleiro-teste))
-(defun print-tabuleiro (tabuleiro &optional (stream t))
+;; (format-tabuleiro (tabuleiro-teste))
+(defun format-tabuleiro (tabuleiro &optional (stream t))
   "Formata o tabuleiro"
   (not (null (mapcar #'(lambda (l)
                          (progn
@@ -296,12 +296,12 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
                           (format stream "~%"))) tabuleiro)))
   (format t "~%"))
 
-;;(print-tabuleiros (usar-operadores (tabuleiro-jogado)))
-;;(print-tabuleiros (usar-operadores (tabuleiro-teste)))
-(defun print-tabuleiros (tabuleiros &optional (stream t))
+;;(format-tabuleiros (usar-operadores (tabuleiro-jogado)))
+;;(format-tabuleiros (usar-operadores (tabuleiro-teste)))
+(defun format-tabuleiros (tabuleiros &optional (stream t))
   "Formata os tabuleiros"
   (not (null (mapcar #'(lambda (l)
                          (progn
-                          (print-tabuleiro l)
+                          (format-tabuleiro l)
                           (format stream "------------------------------------------------~%"))) tabuleiros)))
   (format t "~%~%"))
