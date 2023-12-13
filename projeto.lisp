@@ -10,11 +10,9 @@
 (load "procura.lisp")
 (load "puzzle.lisp")
 
-(defun teste ()
-    
-    (let ((opcao (read)))
-      (numberp opcao)
-        ))
+#|
+  
+
 
 (defun iniciar ()
     (clear-input)
@@ -174,3 +172,5 @@
         
 
 )
+
+|#
