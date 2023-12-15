@@ -314,3 +314,61 @@
         )
     )
 )
+
+;; ============= ESTATISTICAS =============
+
+;; <solucao>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <caminho-solucao> <profundidade> <hora-fim>)
+#|
+;;(ficheiro-estatisticas '("solucao" "A" "BFS" (hora-atual) (hora-atual)))
+(defun ficheiro-estatisticas (solucao)
+"Ficheiro de resultados estatisticos (solucao + dados estatisticos sobre a eficiencia)"
+    (let* (
+            (id-tabuleiro (first solucao))
+            (algoritmo (second solucao))
+            (objetivo (third solucao))
+            (hora-inicio (fourth solucao))
+            (caminho-solucao (fifth solucao))
+            (hora-fim (sixth solucao))
+            (profundidade (seventh solucao))
+           )
+
+        (with-open-file (file "resultados.dat" :direction :output :if-does-not-exist :create :if-exists :append)
+            (ecase algoritmo
+                ('bfs (estatisticas file id-tabuleiro algoritmo objetivo caminho-solucao hora-inicio hora-fim))
+                ('dfs (estatisticas file id-tabuleiro algoritmo objetivo caminho-solucao hora-inicio hora-fim profundidade))
+                ('a* (estatisticas file id-tabuleiro algoritmo objetivo caminho-solucao hora-inicio hora-fim))
+            )
+        )
+    )
+)
+
+(defun hora-atual ()
+"Retorna a hora atual (hh mm ss)"
+    (multiple-value-bind (s m h)
+            (get-decoded-time)
+        (format nil "~a:~a:~a" h m s))
+)
+
+(defun estatisticas (stream id-tabuleiro algoritmo objetivo caminho-solucao hora-inicio hora-fim &optional profundidade)
+"Solução e dados de eficiência para os algoritmos"
+    (progn
+        (format stream "~%Tabuleiro ~a" id-tabuleiro)
+        (format stream "~% - Algoritmo: ~a" algoritmo)
+        (format stream "~% - Objetivo: ~a caixas" objetivo)
+        (format stream "~% - Solucao encontrada")
+        (print-tabuleiro (no-solucao caminho-solucao) stream)
+        (format stream "~% - Fator de ramificacao media: ~f" (fator-ramificacao-media caminho-solucao))
+        (if (eql algoritmo 'DFS)
+            (format stream "~% - Profundidade maxima: ~a" profundidade)
+        )
+        (format stream "~% - Nº nos gerados: ~a" (num-nos-gerados caminho-solucao))
+        (if (eql algoritmo 'A*)
+            (format stream "~% - Nº nos expandidos: ~a" (num-nos-expandidos-a* caminho-solucao))
+            (format stream "~% - Nº nos expandidos: ~a" (num-nos-expandidos caminho-solucao))
+        )
+        (format stream "~% - Penetrancia: ~f" (penetrancia caminho-solucao))
+        (format stream "~% - Inicio: ~a" hora-inicio)
+        (format stream "~% - Fim: ~a~%~%" hora-fim)
+    )
+)
+|#
