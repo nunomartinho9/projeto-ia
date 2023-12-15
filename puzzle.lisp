@@ -5,20 +5,7 @@
 
 ;;;; Autor: Nuno Martinho e João Coelho
 
-
-;;; Tabuleiros
-
-(defun tab-1 ()
-  '((nil 05 nil nil nil 15 nil nil nil 25)
-    (nil nil nil 06 nil nil nil 16 nil nil)
-    (nil 04 nil nil nil 14 nil nil nil 24)
-    (nil nil nil 07 nil nil nil 17 nil nil)
-    (nil 03 nil nil nil 13 nil nil nil 23)
-    (nil nil nil 08 nil nil nil 18 nil nil)
-    (nil 02 nil nil nil 12 nil nil nil 22)
-    (nil nil nil 09 nil nil nil 19 nil nil)
-    (nil 01 nil nil nil 11 nil nil nil 21)
-    (nil nil nil 10 nil nil nil 20 nil nil)))
+;; ============= TABULEIROS =============
 
 (defun tabuleiro-teste ()
   "Tabuleiro de teste sem nenhuma jogada realizada"
@@ -46,12 +33,19 @@
     (3 61 58 44 65 82 19 4 35 62)
     (33 70 84 40 66 38 92 67 98 97)))
 
+;; ============= FUNÇÕES AUXILIARES =============
+
 ;;(remover-se #'(lambda (x) (= x 0)) '(1 2 0 2 0 4)) -> (1 2 2 4)
 (defun remover-se (pred lista)
   "Reconstrói uma lista sem os elementos que verificam o predicado passado como argumento."
   (cond ((null lista) NIL)
         ((funcall pred (car lista)) (remover-se pred (cdr lista)))
         (T (cons (car lista) (remover-se pred (cdr lista))))))
+
+;; (soma-tabuleiro (tabuleiro-teste))
+(defun somar-tabuleiro (tabuleiro)
+  "Soma todos os valores do tabuleiro."
+  (reduce #'+ (mapcan #'(lambda (linha) (remove-if #'(lambda (celula) (eq celula nil)) linha)) tabuleiro)))
 
 ;; (linha 0 (tabuleiro-teste))
 ;; (94 25 54 89 21 8 36 14 41 96)
@@ -147,8 +141,6 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
   "Função que recebe o tabuleiro e devolve a posição (i j) em que se encontra o cavalo."
   (posicao-valor T tabuleiro))
 
-;;(contar-casas-validas (linha 0 (tabuleiro-jogado)))
-;;9
 
 ;;(contar-casas-validas (linha 0 (tabuleiro-teste)))
 ;;10
@@ -245,11 +237,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
          (pontos (celula (car pos) (cadr pos) tabuleiro-anterior)))
     (+ pontos-atual pontos)))
 
-;;operadores
-
-
-
-
+;; ============= OPERADORES =============
 
 (defun mover-cavalo (tabuleiro &optional (valLinha 0) (valColuna 0))
   "Função auxiliar para os operadores."

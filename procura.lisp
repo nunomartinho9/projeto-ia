@@ -1,17 +1,6 @@
-(load "puzzle.lisp")
 
-(defun bfs-recursivo-aux (abertos fechados expandir-nos)
-  (cond
-   ((null abertos) '())
-   (t
-     (let* ((no-atual (car abertos))
-            (novos-fechados (append fechados (list no-atual)))
-            (sucessores (funcall expandir-nos no-atual))
-            (novos-abertos (append (cdr abertos) sucessores)))
-       (if (verificar-solucao no-atual)
-           (caminho-solucao no-atual)
-           (bfs-recursivo-aux novos-abertos novos-fechados expandir-nos))))))
 
+;; ============= ALGORITMOS =============
 
 ;;(bfs-recursivo (tabuleiro-jogado) 100 'usar-operadores 'calcular-pontos 'posicionar-cavalo)
 ;;(bfs-recursivo (tabuleiro-teste) 100 'usar-operadores 'calcular-pontos 'posicionar-cavalo)
@@ -24,47 +13,68 @@
     (bfs-recursivo-aux abertos '() (lambda (no) (gerar-sucessores no expandir-nos fn-calcular-pontos)))))
 
 
-#|
-  BFS
-temos uma lista de abertos e fechados
-estrutura do no: <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade>)
-
-1. Nó inicial => ABERTOS
-2. Se ABERTOS vazia falha.
-3. Remove o primeiro nó de ABERTOS (n) e 
-coloca-o em FECHADOS 
-4. Expande o nó n. Colocar os sucessores 
-no fim de ABERTOS, colocando os 
-ponteiros para n.
-5. Se algum dos sucessores é um nó 
-objectivo sai, e dá a solução. Caso 
-contrário vai para 2.
-
-
-|#
+;; BFS ITERATIVO
+(defun bfs-iterativo (tabuleiro pontos-objetivo expandir-nos fn-calcular-pontos fn-primeira-jogada)
+  "Algoritmo BFS iterativo para resolver o problema do cavalo."
+  (let* ((no-inicial (criar-no-inicial tabuleiro pontos-objetivo))
+         (primeiro-sucessor (gerar-primeiro-sucessor no-inicial fn-primeira-jogada fn-calcular-pontos))
+         (abertos (list primeiro-sucessor))
+         (fechados '()))
+    
+    (loop while abertos
+          for no-atual = (pop abertos)
+          do
+          (setq fechados (append fechados (list no-atual)))
+          (if (verificar-solucao no-atual)
+              (return-from bfs-iterativo (caminho-solucao no-atual)))
+          (let ((sucessores (gerar-sucessores no-atual expandir-nos fn-calcular-pontos)))
+            (setq abertos (append abertos sucessores))))))
 
 
-#| GONCALO
-
-
-
+;; ============= AUX ALGORITMOS =============
 (defun bfs-recursivo-aux (abertos fechados expandir-nos)
   (cond
-   ((null abertos) '()) ;; Se a lista de abertos estiver vazia, a busca terminou
+   ((null abertos) '())
    (t
-    (let* ((no-atual (car abertos))
-           (tabuleiro-atual (first no-atual))
-           (nos-vizinhos (funcall expandir-nos tabuleiro-atual))
-           (novos-fechados (adjoin tabuleiro-atual fechados))
-           (novos-abertos (remove-if #'(lambda (no) (member (first no) (append novos-fechados abertos)))
-                                    (mapcar #'(lambda (vizinho) (list vizinho no-atual)) nos-vizinhos))))
-      (cons no-atual (bfs-recursivo-aux (cdr abertos) (append novos-fechados novos-abertos) expandir-nos))))))
+     (let* ((no-atual (car abertos))
+            (novos-fechados (append fechados (list no-atual)))
+            (sucessores (funcall expandir-nos no-atual))
+            (novos-abertos (append (cdr abertos) sucessores)))
+       (if (verificar-solucao no-atual)
+           (caminho-solucao no-atual)
+           (bfs-recursivo-aux novos-abertos novos-fechados expandir-nos))))))
 
-(defun bfs-recursivo (tabuleiro expandir-nos)
-  "Algoritmo BFS (Busca em Largura) recursivo"
-  (bfs-recursivo-aux (list (list tabuleiro nil nil 0 0)) '() expandir-nos))
+#|Exemplo de uso:
+(let ((resultado (bfs-iterativo (tabuleiro-jogado) 100 'usar-operadores 'calcular-pontos 'posicionar-cavalo)))
+  (if resultado
+      (print resultado)
+      (print "Sem solução")))|#
 
-|#
+
+
+;; ============= AUXILIARES =============
+
+
+;; funcao de verificar se o no e a solucao
+(defun verificar-solucao (no-atual)
+  "Função que recebe o no atual e verifica se este é um nó solução. 
+  Se a pontuação for maior ou igual que a pontuação desejada é devolvido T, caso contrário NIL."
+  (cond
+   ((>= (no-pontos-atual no-atual) (no-pontos-final no-atual)) T)
+   (t NIL)))
+
+(defun caminho-solucao (no)
+  "Devolve uma lista de nos do no inicial ate ao no da solucao."
+  (if (null (no-pai no))
+      (list (list (no-tabuleiro no)
+                  (no-pontos-final no)
+                  (no-pontos-atual no)
+                  (no-profundidade no)))
+      (cons (list (no-tabuleiro no)
+                  (no-pontos-final no)
+                  (no-pontos-atual no)
+                  (no-profundidade no))
+            (caminho-solucao (no-pai no)))))
 
 
 ;; ============= NOS =============
@@ -109,56 +119,6 @@ contrário vai para 2.
   (mapcar #'(lambda (tab)
               (criar-no tab no-atual (no-pontos-final no-atual) (funcall fn-calcular-pontos (no-pontos-atual no-atual) (no-tabuleiro no-atual) tab) (+ 1 (no-profundidade no-atual)))) (funcall fn-expandir-no (no-tabuleiro no-atual))))
 
-
-(defun gerar-sucessores-depu (no-atual fn-expandir-no fn-calcular-pontos)
-  "Recebe um no e a função de expansão de nos, 
-  (a função passada normalmente vai ser a usar-operadores que irá gerar uma lista das próximas jogadas)
-  depois essa lista de tabuleiros será convertida para uma lista de nós."
-  (let* ((tabuleiros-expandidos (funcall fn-expandir-no (no-tabuleiro no-atual)))
-         (nos-expandidos (mapcar #'(lambda (tab)
-                                     (let ((novo-no (criar-no tab no-atual
-                                                              (no-pontos-final no-atual)
-                                                              (funcall fn-calcular-pontos (no-pontos-atual no-atual) (no-tabuleiro no-atual) tab)
-                                                              (+ 1 (no-profundidade no-atual)))))
-                                       (format t "Novo Nó: ~A~%" novo-no) ;; Adicione esta linha
-                                       novo-no))
-                                 tabuleiros-expandidos)))
-
-    nos-expandidos))
-
-
-
-
-
-;; funcao de verificar se o no e a solucao
-(defun verificar-solucao (no-atual)
-  "Função que recebe o no atual e verifica se este é um nó solução. 
-  Se a pontuação for maior ou igual que a pontuação desejada é devolvido T, caso contrário NIL."
-  (cond
-   ((>= (no-pontos-atual no-atual) (no-pontos-final no-atual)) T)
-   (t NIL)))
-(defun caminho-solucao (no)
-  "Devolve uma lista de nos do no inicial ate ao no da solucao."
-  (if (null (no-pai no))
-      (list (list (no-tabuleiro no)
-                  (no-pontos-final no)
-                  (no-pontos-atual no)
-                  (no-profundidade no)))
-      (cons (list (no-tabuleiro no)
-                  (no-pontos-final no)
-                  (no-pontos-atual no)
-                  (no-profundidade no))
-            (caminho-solucao (no-pai no)))))
-
-
-#|
-(defun caminho-solucao (no)
-  "Devolve uma lista de nos do no inicial ate ao no da solucao."
-  (if (null (no-pai no))
-      (list (list (no-tabuleiro no) (no-pontos-final no) (no-pontos-atual no) (no-profundidade no)))
-      (append (caminho-solucao (no-pai no)) (list (list (no-tabuleiro no) (no-pontos-final no) (no-pontos-atual no) (no-profundidade no))))))
-
-|#
 
 
 ;; ============= SELETORES =============
