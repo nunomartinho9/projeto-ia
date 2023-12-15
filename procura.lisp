@@ -23,15 +23,16 @@
          (primeiro-sucessor (gerar-primeiro-sucessor no-inicial fn-primeira-jogada fn-calcular-pontos))
          (abertos (list primeiro-sucessor))
          (fechados '()))
-    
-    (loop while abertos
-          for no-atual = (pop abertos)
+
+    (loop until (null abertos)
           do
-          (setq fechados (append fechados (list no-atual)))
-          (if (verificar-solucao no-atual)
-              (return-from bfs-iterativo (list (caminho-solucao no-atual) (length abertos) (length fechados))))
-          (let ((sucessores (gerar-sucessores no-atual expandir-nos fn-calcular-pontos)))
-            (setq abertos (append abertos sucessores))))))
+          (let ((no-atual (pop abertos)))
+            (setq fechados (append fechados (list no-atual)))
+            (if (verificar-solucao no-atual)
+                (return (caminho-solucao no-atual)))
+            (setq abertos (append abertos (gerar-sucessores no-atual expandir-nos fn-calcular-pontos)))))))
+
+
 
 
 ;; ============= AUX ALGORITMOS =============
