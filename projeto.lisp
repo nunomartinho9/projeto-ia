@@ -18,7 +18,7 @@
             (or (not (numberp opcao)) (< opcao 1) (> opcao 3))
                 (progn (format t "Escolha uma opção válida!") (iniciar))
                 (ecase opcao
-                    ('1 (progn 
+                    (1 (progn 
                             (print-tabuleiros)
                             (iniciar)
                         )
@@ -291,7 +291,7 @@
     (if (<= indice 0) nil      
         (let ((tabuleiroEscolhido (escolher-problema indice)))
             (progn
-                (format stream "Problema: ~a" (nome-problema tabuleiroEscolhido))
+                (format stream "Problema ~a" (string-upcase (nome-problema tabuleiroEscolhido)))
                 (format t "~%")
                 (format stream "Pontos necessários: ~d" (pontuacao-problema tabuleiroEscolhido))
                 (format t "~%")
@@ -309,7 +309,6 @@
             (progn
                 (format T "~%" )
                 (print-tabuleiro ln)
-                (format T "~%" )
                 (print-tabuleiros (1+ ln))
             )
         )
