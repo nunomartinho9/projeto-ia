@@ -19,9 +19,7 @@
                 (progn (format t "Escolha uma opção válida!") (iniciar))
                 (ecase opcao
                     ('1 (progn 
-                            (let ((tabuleiro (opcao-tabuleiro 'iniciar))) 
-                                (if (numberp tabuleiro) (print-tabuleiro tabuleiro))
-                            )
+                            (print-tabuleiros)
                             (iniciar)
                         )
                     )
@@ -30,7 +28,7 @@
                                 (progn
                                     (format t "~%Tabuleiro ~a" (first solucao))
                                     (format t "~%  - Algoritmo ~a" (second solucao))
-                                    (format t "~%  - Solucao:")
+                                    (format t "~%  - Solução:")
                                     (print-tabuleiro (car (fifth solucao)))
                                 )
                             )
@@ -66,7 +64,7 @@
     (cond ((null problemas) 
             (progn
                 (format t "~%|                                |")
-                (format t "~%|        0 - Voltar atras        |") 
+                (format t "~%|        0 - Voltar atrás        |") 
                 (format t "~%o                                o")
                 (format t "~%~%>> ")
             )
@@ -106,7 +104,7 @@
 "Mostra uma mensagem para escolher a profundidade"
     (progn
         (format t "~%o                                                o")
-        (format t "~%|        - Defina a profundidade maxima -        |")
+        (format t "~%|        - Defina a profundidade máxima -        |")
         (format t "~%|                 - a utilizar -                 |")
         (format t "~%|                                                |")
         (format t "~%|                  0 - Voltar                    |")
@@ -119,10 +117,10 @@
 "Mostra uma mensagem para escolher a profundidade"
     (progn
         (format t "~%o                                                o")
-        (format t "~%|       - Defina a heuristica a utilizar -       |")
+        (format t "~%|       - Defina a heurística a utilizar -       |")
         (format t "~%|                                                |")
-        (format t "~%|           1 - Heuristica Enunciado             |")
-        (format t "~%|         2 - Heuristica Personalizada           |")
+        (format t "~%|           1 - Heurística Enunciado             |")
+        (format t "~%|         2 - Heurística Personalizada           |")
         (format t "~%|                                                |")
         (format t "~%|                  0 - Voltar                    |")
         (format t "~%o                                                o")
@@ -130,9 +128,7 @@
     )
 )
 
-;; OPÇÔES
-
-;; ============= MENU OPÇÕES =============
+;; ============= NAVEGAÇÃO =============
 
 (defun opcao-tabuleiro (&optional (voltar 'iniciar))
 "Recebe a opção de um tabuleiro do menu"
@@ -145,7 +141,7 @@
                     (let ((lista (ler-tabuleiros)))
                         (if (or (< opcao 0) (> opcao (length lista)))
                             (progn 
-                                (format t "Escolha uma opcao valida!") (opcao-tabuleiro 'tabuleiros-menu)
+                                (format t "Escolha uma opção válida!") (opcao-tabuleiro 'tabuleiros-menu)
                             )
                             opcao
                         )
@@ -165,8 +161,8 @@
         (algoritmos-menu)
         (let ((opcao (read)))
             (cond ((equal opcao '0) (iniciar))
-                    ((or (< opcao 0) (> opcao 4)) (progn (format t "Escolha uma opcao valida!~%") (opcao-algoritmo)))
-                    ((not (numberp opcao)) (progn (format t "Escolha uma opcao valida!~%")))
+                    ((or (< opcao 0) (> opcao 4)) (progn (format t "Escolha uma opção válida!~%") (opcao-algoritmo)))
+                    ((not (numberp opcao)) (progn (format t "Escolha uma opção válida!~%")))
                     (T (let* (
                                 (no-tabuleiro (opcao-tabuleiro 'opcao-algoritmo))
                                 (objetivo (opcao-objetivo))
@@ -213,15 +209,15 @@
 )
 |#
 
-#| 
+#|
 (defun opcao-profundidade ()
-"Recebe um valor de profundidade maxima do utilizador"
+"Recebe um valor de profundidade máxima do utilizador"
     (if (not (profundidade-menu))
         (let ((opcao (read)))
             (cond ((equal opcao '0) (opcao-objetivo))
                   ((or (not (numberp opcao)) (< opcao 0))
                     (progn
-                        (format t "Escolha uma opcao valida!~%")
+                        (format t "Escolha uma opção válida!~%")
                         (opcao-profundidade 'profundidade-menu)
                     )
                   )
@@ -234,13 +230,13 @@
 
 #|
 (defun opcao-heuristica ()
-"Recebe um valor que cooresponde a heuristica escolhida pelo utilizador"
+"Recebe um valor que corresponde a heurística escolhida pelo utilizador"
     (if (not (heuristica-menu))
         (let ((opcao (read)))
             (cond ((equal opcao '0) (opcao-objetivo))
                   ((or (not (numberp opcao)) (< opcao 0) (> opcao 2))
                     (progn
-                        (format t "Escolha uma opcao valida!~%")
+                        (format t "Escolha uma opção válida!~%")
                         (opcao-heuristica 'heuristica-menu)
                     )
                   )
@@ -263,7 +259,7 @@
 
 ;; (ler-tabuleiros)
 (defun ler-tabuleiros ()
-"Le os tabuleiros no ficheiro problemas.dat"
+"Lê os tabuleiros no ficheiro problemas.dat"
     (with-open-file (stream "problemas.dat" :if-does-not-exist nil)
         (do ((result nil (cons next result))
                 (next (read stream nil 'eof) (read stream nil 'eof)))
@@ -308,13 +304,14 @@
 ;; (print-tabuleiros (ler-tabuleiros))
 (defun print-tabuleiros (&optional (ln 1))
     (cond
-        ((> ln (length (ler-tabuleiros))) (format T "------------------------------------") )
+        ((> ln (length (ler-tabuleiros))) (format T "------------------------------------~%") )
         (t 
             (progn
+                (format T "~%" )
                 (print-tabuleiro ln)
-                (format T "~%~%" )
+                (format T "~%" )
                 (print-tabuleiros (1+ ln))
             )
         )
-     )
+    )
 )
