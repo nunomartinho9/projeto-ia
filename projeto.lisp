@@ -153,7 +153,7 @@
 )
 
 ;; FUNCAO INACABADA
-;; <solucao>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <caminho-solucao> <hora-fim> <profundidade>)
+;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade>)
 #|
 (defun opcao-algoritmo ()
 "Recebe a opcao de algoritmo do utilizador e executa-o"
