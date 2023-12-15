@@ -1,4 +1,7 @@
-
+;; ============= ESTRUTURAS =============
+;; <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade> <>)
+;; <solucao>::= (<caminho-solucao> <n-abertos> <n-fechados>)
+;; <solucao-a*>::= (<caminho-solucao> <n-abertos> <n-fechados> <n-nos-expandidos>)
 
 ;; ============= ALGORITMOS =============
 
@@ -26,7 +29,7 @@
           do
           (setq fechados (append fechados (list no-atual)))
           (if (verificar-solucao no-atual)
-              (return-from bfs-iterativo (caminho-solucao no-atual)))
+              (return-from bfs-iterativo (list (caminho-solucao no-atual) (length abertos) (length fechados))))
           (let ((sucessores (gerar-sucessores no-atual expandir-nos fn-calcular-pontos)))
             (setq abertos (append abertos sucessores))))))
 
@@ -41,7 +44,7 @@
             (sucessores (funcall expandir-nos no-atual))
             (novos-abertos (append (cdr abertos) sucessores)))
        (if (verificar-solucao no-atual)
-           (caminho-solucao no-atual)
+           (list (caminho-solucao no-atual) (length abertos) (length fechados))
            (bfs-recursivo-aux novos-abertos novos-fechados expandir-nos))))))
 
 #|Exemplo de uso:
@@ -181,7 +184,7 @@
 
 (defun penetrancia (lista)
   "Calcula a penetrancia"
-  (/ (length (car lista)) (num-nos-gerados lista)))
+  (float (/ (length (car lista)) (num-nos-gerados lista))))
 
 (defun no-solucao (lista)
   "Retorna o no solucao"
