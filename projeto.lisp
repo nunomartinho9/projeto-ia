@@ -24,14 +24,15 @@
                         )
                     )
                     (2 (progn
-                            (let ((solucao (opcao-algoritmo)))
+                            (let ((resultado (opcao-algoritmo)))
                                 (progn
-                                    (format t "~%Tabuleiro ~a" (first solucao))
-                                    (format t "~%  - Algoritmo ~a" (second solucao))
+                                    (format t "~%Tabuleiro ~a" (first resultado))
+                                    (format t "~%  - Algoritmo ~a" (second resultado))
+                                    (format t "~%  - Objetivo: ~a" (third resultado))
                                     (format t "~%  - Solução:")
                                     (if (fifth solucao)
-                                        ;;(print-tabuleiro (fifth solucao)) PRINT-SOLUCAO NA FUNFA
-                                        (format t "~%~t~t~t Não existe solução.~%")
+                                        ;;(print-tabuleiro (fifth solucao)) ALTERAR POR NOVO PRINT DO NUNITO
+                                        (format t "~%~t~t~t Solução não encontrada.~%")
                                     )
                                 )
                             )
@@ -93,10 +94,9 @@
         (format t "~%o                                    o")
         (format t "~%|      - Escolha o algoritmo -       |")
         (format t "~%|                                    |")
-        ;;(format t "~%|    1 - Breadth-First (iterativo)   |")
-        (format t "~%|    1 - Breadth-First (recursivo)   |")
-        (format t "~%|    2 - Depth-First                 |")
-        (format t "~%|    3 - A*                          |")
+        (format t "~%|         1 - Breadth-First          |")
+        (format t "~%|         2 - Depth-First            |")
+        (format t "~%|         3 - A*                     |")
         (format t "~%|                                    |")
         (format t "~%|            0 - Voltar              |")
         (format t "~%o                                    o")
@@ -107,12 +107,12 @@
 (defun profundidade-menu ()
 "Mostra uma mensagem para escolher a profundidade"
     (progn
-        (format t "~%o                                                o")
-        (format t "~%|        - Defina a profundidade máxima -        |")
-        (format t "~%|                 - a utilizar -                 |")
-        (format t "~%|                                                |")
-        (format t "~%|                  0 - Voltar                    |")
-        (format t "~%o                                                o")
+        (format t "~%o                                             o")
+        (format t "~%|      - Defina a profundidade máxima         |")
+        (format t "~%|                a utilizar -                 |")
+        (format t "~%|                                             |")
+        (format t "~%|                0 - Voltar                   |")
+        (format t "~%o                                             o")
         (format t "~%~%>> ")
     )
 )
@@ -157,7 +157,7 @@
 )
 
 ;; FUNCAO INACABADA
-;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <pontuacao> <profundidade>)
+;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim>)
 
 ;; <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade> <>)
 ;; <solucao>::= (<caminho-solucao> <n-abertos> <n-fechados>)
@@ -183,30 +183,13 @@
                                 (hora-fim (hora-atual))
                             )
                         (ecase opcao
-                        #| 
-                            (1
-                                (let* (
-                                    (solucao (bfs-iterativo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicionar-cavalo))
-                                    (caminho-solucao (no-tabuleiro (car solucao)))
-                                    (pontuacao (no-pontos-atual (caar solucao)))
-                                    (profundidade (no-profundidade (caar solucao)))
-                                    (resultado (list nome 'BFS-iterativo objetivo hora-inicio caminho-solucao hora-fim pontuacao profundidade)))
-                                    (progn 
-                                        ;;(ficheiro-estatisticas resultado) 
-                                        resultado
-                                    )
-                                )
-                            )
-                            |#
                             (1
                                 (let* (                                    
                                     (solucao (bfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial))
-                                    (pontuacao (third (caar solucao)))
-                                    (profundidade (fourth (caar solucao)))
-                                    (resultado (list nome 'BFS-recursivo objetivo hora-inicio solucao hora-fim pontuacao profundidade)))
+                                    (resultado (list nome 'BFS objetivo hora-inicio solucao hora-fim)))
                                     (progn 
-                                        ;;(ficheiro-estatisticas resultado) 
                                         resultado
+                                        ;;(ficheiro-estatisticas resultado) 
                                     )
                                 )
                             )
