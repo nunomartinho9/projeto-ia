@@ -2,7 +2,6 @@
 ;;  escreve e lê ficheiros, e trata da interação com o utilizador
 ;;  Autores: Nuno Martinho & João Coelho.
 
-;;(bfs-recursivo (third (escolher-problema 1)) (second (escolher-problema 1)) 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial)
 ;; ============ CARREGAR FICHEIROS ============
 
 (load "procura.lisp")
@@ -22,9 +21,7 @@
             ))
             (2
                 (progn
-                    (let ((resultado (opcao-algoritmo)))
-                                (format-solucao resultado)
-                    )
+                    (opcao-algoritmo)
                     (iniciar)
             ))
             (3 
@@ -102,8 +99,9 @@
         (format t "~%|      - Defina a profundidade máxima         |")
         (format t "~%|                a utilizar -                 |")
         (format t "~%|                                             |")
-        (format t "~%|    Aviso: Se não introduzir nenhum valor,   |")
-        (format t "~%|    por defeito será utilizado o valor 20.   |")
+        (format t "~%|         1 - Valor predefinido (20)          |")
+        (format t "~%|                                             |")
+        (format t "~%|          Ou introduza outro valor.          |")
         (format t "~%|                                             |")
         (format t "~%|                0 - Voltar                   |")
         (format t "~%o                                             o")
@@ -129,12 +127,12 @@
 ;; ============= NAVEGAÇÃO =============
 
 (defun opcao-tabuleiro (&optional (voltar 'iniciar))
-"Recebe a opção de um tabuleiro do menu"
+"Recebe a opção de um tabuleiro do menu."
     (progn 
         (tabuleiros-menu)
         (let ((opcao (read)))
-            (cond ((equal opcao '0) (funcall voltar))
-                  ((not (numberp opcao)) (progn (format t "Escolha uma opção válida~%")))
+            (cond ((equal opcao 0) (funcall voltar))
+                  ((not (numberp opcao)) (progn (format t "Escolha uma opção válida!~%")))
                   (T
                     (let ((lista (ler-tabuleiros)))
                         (if (or (< opcao 0) (> opcao (length lista)))
@@ -150,17 +148,14 @@
     )
 )
 
-;; FUNCAO INACABADA
 ;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>)
 
 ;; <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade> <>)
 ;; <solucao>::= (<caminho-solucao> <n-abertos> <n-fechados>)
 ;; <solucao-a*>::= (<caminho-solucao> <n-abertos> <n-fechados> <n-nos-expandidos>)
 
-;; (bfs-recursivo (third (escolher-problema 1)) (second (escolher-problema 1)) 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial)
-
 (defun opcao-algoritmo ()
-"Recebe a opcao de algoritmo do utilizador e executa-o"
+"Recebe a opção de algoritmo do utilizador e executa-o."
     (progn
         (algoritmos-menu)
         (let ((opcao (read)))
@@ -168,38 +163,38 @@
                     ((or (< opcao 0) (> opcao 4)) (progn (format t "Escolha uma opção válida!~%") (opcao-algoritmo)))
                     ((not (numberp opcao)) (progn (format t "Escolha uma opção válida!~%")))
                     (T (let* (
-                                (id-tabuleiro (opcao-tabuleiro 'opcao-algoritmo))
+                                (id-tabuleiro (opcao-tabuleiro))
                                 (problema (escolher-problema id-tabuleiro))
                                 (nome (nome-problema problema))
                                 (tabuleiro (tabuleiro-problema problema))
                                 (objetivo (pontuacao-problema problema))
-                                (hora-inicio (hora-atual))
-                                (hora-fim (hora-atual))
                             )
                         (ecase opcao
                             (1
-                                (let* (                                    
-                                    (solucao (bfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial))
-                                    (resultado (list nome 'BFS objetivo hora-inicio solucao hora-fim)))
-                                    (progn 
-                                        resultado
-                                        ;;(ficheiro-estatisticas resultado) 
+                                (let* (                                   
+                                    (resultado (list nome 'BFS objetivo (get-universal-time) (bfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial) (get-universal-time)))
+                                    )
+                                    (progn
+                                        (format-solucao resultado)
+                                        (if (fifth resultado)
+                                            (ficheiro-estatisticas resultado)
+                                        )
                                     )
                                 )
                             )
-                            
                             (2
                                 (let* (
                                         (profundidade-max (opcao-profundidade))
-                                        (resultado (list nome 'DFS objetivo hora-inicio (dfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial profundidade-max) hora-fim profundidade-max))
+                                        (resultado (list nome 'DFS objetivo (get-universal-time) (dfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial profundidade-max) (get-universal-time) profundidade-max))
                                     )
                                     (progn
-                                        resultado
-                                        ;;(ficheiro-estatisticas resultado)
+                                        (format-solucao resultado)
+                                        (if (fifth resultado)
+                                            (ficheiro-estatisticas resultado)
+                                        )
                                     )
                                 )
                             )
-                            
                             #|
                             (3
                                 (let* (
@@ -224,15 +219,15 @@
 "Recebe um valor de profundidade máxima do utilizador"
     (if (not (profundidade-menu))
         (let ((opcao (read)))
-            (cond ((equal opcao '0) (opcao-objetivo))
-                  ((equal opcao '()) '())
-                  ((and (numberp opcao) (< opcao 0))
+            (cond ((equal opcao 0) (opcao-tabuleiro))
+                  ((equal opcao 1) 20)
+                  ((or (not (numberp opcao)) (< opcao 0))
                     (progn
                         (format t "Escolha uma opção válida!~%")
                         (opcao-profundidade 'profundidade-menu)
                     )
                   )
-                  (T opcao)
+                  (t opcao)
             )
         )
     )
@@ -268,8 +263,7 @@
 ;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim>)
 
 (defun format-no-solucao (no &optional (stream t))
-  
-    "Formata o tabuleiro"
+"Formata o tabuleiro."
   (not (null (mapcar #'(lambda (l)
                          (progn
                           ;;(format stream "Objetivo: ~a~tPontos: ~a~tProfundidade: ~a" (solucao-no-pontos-obj no) (solucao-no-pontos-atual no) (solucao-no-profundidade no))
@@ -280,18 +274,18 @@
   )
 
 (defun format-nos-solucao (nos &optional (stream t))
-  
-    
+"Formata o nó-solução."
   (not (null (mapcar #'(lambda (l)
                          (progn
-                          (format stream "Pontos: ~a~tProfundidade: ~a~%"(solucao-no-pontos-atual l) (solucao-no-profundidade l))
+                          (format stream "~%Pontos: ~a~tProfundidade: ~a~%"(solucao-no-pontos-atual l) (solucao-no-profundidade l))
                           (format stream "------------------------------------------------~%")
-                          (format-no-solucao l)
+                          (format-no-solucao l stream)
                           )) nos)))
   (format t "~%")
-  )
+)
 
 (defun format-solucao (resultado &optional (stream t))
+"Formatar a solução completa."
   (let* (
         (problema-id (first resultado))
         (algoritmo (second resultado))
@@ -300,7 +294,7 @@
         (profundidade-max (seventh resultado))
     )
     (format stream "====================================================~%")
-    (format stream "~tProblema ~a~tObjetivo: ~a~%" problema-id objetivo)
+    (format stream "~tProblema ~a~t~tObjetivo: ~a pontos~%" problema-id objetivo)
     (format stream "~tAlgoritmo ~a~%" algoritmo)
     (if profundidade-max
         (format stream "~tProfundidade máxima: ~a~%" profundidade-max)
@@ -308,14 +302,14 @@
     (if solucao
         (progn
             (format stream "~%~tUma solução foi encontrada!~%")
-            (format stream "===================================================~%~%")
+            (format stream "===================================================~%")
             (format-nos-solucao (reverse (solucao-nos solucao)))
             (format stream "===========================================================~%")
-            (format stream "Restantes estatisticas guardadas no ficheiro resultados.dat~%")
+            (format stream "Restantes estatísticas guardadas no ficheiro resultados.dat~%")
             (format stream "===========================================================~%")
-            (format stream "~%"))
+        )
         (progn
-            (format stream "Não foi encontrada uma solução!~%")
+            (format stream "~%~tNão foi encontrada uma solução!~%")
             (format stream "========================================================~%"))
     )
   )
@@ -383,58 +377,61 @@
 
 ;; ============= ESTATISTICAS =============
 
-;; <solucao>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <caminho-solucao> <profundidade> <hora-fim>)
-#|
-;;(ficheiro-estatisticas '("solucao" "A" "BFS" (hora-atual) (hora-atual)))
-(defun ficheiro-estatisticas (solucao)
-"Ficheiro de resultados estatisticos (solucao + dados estatisticos sobre a eficiencia)"
+;;(ficheiro-estatisticas '(<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>))
+(defun ficheiro-estatisticas (resultado)
+"Ficheiro de resultados estatísticos (solução + dados estatísticos sobre a eficiência)"
     (let* (
-            (id-tabuleiro (first solucao))
-            (algoritmo (second solucao))
-            (objetivo (third solucao))
-            (hora-inicio (fourth solucao))
-            (caminho-solucao (fifth solucao))
-            (hora-fim (sixth solucao))
-            (profundidade (seventh solucao))
+            (problema-id (first resultado))
+            (algoritmo (second resultado))
+            (objetivo (third resultado))
+            (hora-inicio (fourth resultado))
+            (solucao (fifth resultado))
+            (hora-fim (sixth resultado))
+            (profundidade (seventh resultado))
            )
 
         (with-open-file (file "resultados.dat" :direction :output :if-does-not-exist :create :if-exists :append)
             (ecase algoritmo
-                ('bfs (estatisticas file id-tabuleiro algoritmo objetivo caminho-solucao hora-inicio hora-fim))
-                ('dfs (estatisticas file id-tabuleiro algoritmo objetivo caminho-solucao hora-inicio hora-fim profundidade))
-                ('a* (estatisticas file id-tabuleiro algoritmo objetivo caminho-solucao hora-inicio hora-fim))
+                ('bfs (estatisticas file problema-id algoritmo objetivo hora-inicio solucao hora-fim))
+                ('dfs (estatisticas file problema-id algoritmo objetivo hora-inicio solucao hora-fim profundidade))
+                ('a* (estatisticas file problema-id algoritmo objetivo hora-inicio solucao hora-fim))
             )
         )
     )
 )
-|#
-(defun hora-atual ()
-"Retorna a hora atual (hh mm ss)"
-    (multiple-value-bind (s m h)
-            (get-decoded-time)
-        (format nil "~a:~a:~a" h m s))
+
+(defun duracao (hora-inicio hora-fim)
+    (- hora-fim hora-inicio)
 )
-#|
-(defun estatisticas (stream id-tabuleiro algoritmo objetivo caminho-solucao hora-inicio hora-fim &optional profundidade)
-"Solução e dados de eficiência para os algoritmos"
+
+(defun estatisticas (file problema-id algoritmo objetivo hora-inicio solucao hora-fim &optional profundidade)
+"Solução e dados de eficiência para os algoritmos."
     (progn
-        (format stream "~%Tabuleiro ~a" id-tabuleiro)
-        (format stream "~% - Algoritmo: ~a" algoritmo)
-        (format stream "~% - Objetivo: ~a caixas" objetivo)
-        (format stream "~% - Solucao encontrada")
-        (print-tabuleiro (no-solucao caminho-solucao) stream)
-        (format stream "~% - Fator de ramificacao media: ~f" (fator-ramificacao-media caminho-solucao))
+        (format file "~%Tabuleiro ~a" problema-id)
+        (format file "~% - Algoritmo: ~a" algoritmo)
+        (format file "~% - Objetivo: ~a pontos" objetivo)
         (if (eql algoritmo 'DFS)
-            (format stream "~% - Profundidade maxima: ~a" profundidade)
+            (format file "~% - Profundidade máxima: ~a" profundidade)
         )
-        (format stream "~% - Nº nos gerados: ~a" (num-nos-gerados caminho-solucao))
-        (if (eql algoritmo 'A*)
-            (format stream "~% - Nº nos expandidos: ~a" (num-nos-expandidos-a* caminho-solucao))
-            (format stream "~% - Nº nos expandidos: ~a" (num-nos-expandidos caminho-solucao))
+        (if solucao 
+            (progn
+                (format file "~% - Solução encontrada ~%")
+                (format-nos-solucao (reverse (solucao-nos solucao)) file)
+                (format file "~% - Pontos: ~a" (solucao-no-pontos-atual (no-caminho-solucao-primeiro solucao)))
+                (format file "~% - Profundidade: ~a" (solucao-no-profundidade (no-caminho-solucao-primeiro solucao)))
+                (format file "~% - Nº nós gerados: ~a" (num-nos-gerados solucao))
+                (if (eql algoritmo 'A*)
+                    (format file "~% - Nº nós expandidos: ~a" (num-nos-expandidos-a* solucao))
+                    (format file "~% - Nº nós expandidos: ~a" (solucao-fechados solucao))
+                )
+                (format file "~% - Penetrância: ~f" (penetrancia solucao))
+                (format file "~% - Fator de ramificação média: ~f" (fator-ramificacao-media solucao))
+                (format file "~% - Duração: ~a segundo(s)" (duracao hora-inicio hora-fim))
+                (format file "~%~%~%")
+            )
         )
-        (format stream "~% - Penetrancia: ~f" (penetrancia caminho-solucao))
-        (format stream "~% - Inicio: ~a" hora-inicio)
-        (format stream "~% - Fim: ~a~%~%" hora-fim)
     )
 )
-|#
+
+
+(iniciar)
