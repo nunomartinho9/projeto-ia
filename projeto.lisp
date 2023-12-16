@@ -102,8 +102,8 @@
         (format t "~%|      - Defina a profundidade máxima         |")
         (format t "~%|                a utilizar -                 |")
         (format t "~%|                                             |")
-        (format t "~%|      1 - Usar profundidade padrão (20)      |")
-        (format t "~%|      2 - Inserir outro valor                |")
+        (format t "~%|    Aviso: Se não introduzir nenhum valor,   |")
+        (format t "~%|    por defeito será utilizado o valor 20.   |")
         (format t "~%|                                             |")
         (format t "~%|                0 - Voltar                   |")
         (format t "~%o                                             o")
@@ -187,19 +187,19 @@
                                     )
                                 )
                             )
-                            #|
+                            
                             (2
                                 (let* (
                                         (profundidade (opcao-profundidade))
-                                        (resultado (list id-tabuleiro 'DFS objetivo (hora-atual) (dfs 'gerar-sucessores profundidade no) (hora-atual) profundidade))
+                                        (resultado (list nome 'DFS objetivo hora-inicio (dfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial profundidade) hora-fim))
                                     )
                                     (progn
-                                        (ficheiro-estatisticas resultado)
                                         resultado
+                                        ;;(ficheiro-estatisticas resultado)
                                     )
                                 )
                             )
-                            |#
+                            
                             #|
                             (3
                                 (let* (
@@ -225,7 +225,8 @@
     (if (not (profundidade-menu))
         (let ((opcao (read)))
             (cond ((equal opcao '0) (opcao-objetivo))
-                  ((or (not (numberp opcao)) (< opcao 0))
+                  ((equal opcao '()) '())
+                  ((and (numberp opcao) (< opcao 0))
                     (progn
                         (format t "Escolha uma opção válida!~%")
                         (opcao-profundidade 'profundidade-menu)
@@ -284,9 +285,10 @@
   (not (null (mapcar #'(lambda (l)
                          (progn
                           (format stream "Pontos: ~a~tProfundidade: ~a~%"(solucao-no-pontos-atual l) (solucao-no-profundidade l))
+                          (format stream "------------------------------------------------~%")
                           (format-no-solucao l)
-                          (format stream "------------------------------------------------~%"))) nos)))
-  (format t "~%~%")
+                          )) nos)))
+  (format t "~%")
   )
 
 (defun format-solucao (resultado &optional (stream t))
@@ -296,14 +298,17 @@
         (objetivo (third resultado))
         (solucao (fifth resultado))
     )
-    (format stream "========================================================~%")
-    (format stream "~t~t~t~tProblema: ~a~tObjetivo: ~a~tAlgoritmo: ~a~%" problema-id objetivo algoritmo)
+    (format stream "====================================================~%")
+    (format stream "~tProblema ~a~tObjetivo: ~a~%" problema-id objetivo)
+    (format stream "~tAlgoritmo ~a~%~%" algoritmo)
     (if solucao
         (progn
-            (format stream "Uma Solução foi encontrada! Resultados abaixo!~%")
-            (format stream "========================================================~%")
+            (format stream "~tUma solução foi encontrada!~%")
+            (format stream "===================================================~%~%")
             (format-nos-solucao (reverse (solucao-nos solucao)))
+            (format stream "===========================================================~%")
             (format stream "Restantes estatisticas guardadas no ficheiro resultados.dat~%")
+            (format stream "===========================================================~%")
             (format stream "~%"))
         (progn
             (format stream "Não foi encontrada uma solução!~%")
