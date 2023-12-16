@@ -29,7 +29,10 @@
                                     (format t "~%Tabuleiro ~a" (first solucao))
                                     (format t "~%  - Algoritmo ~a" (second solucao))
                                     (format t "~%  - Solução:")
-                                    (print-tabuleiro (car (fifth solucao)))
+                                    (if (fifth solucao)
+                                        (print-tabuleiro (fifth solucao))
+                                        (format t "~%~t~t~t Não existe solução.~%")
+                                    )
                                 )
                             )
                             (iniciar)
@@ -87,15 +90,16 @@
 (defun algoritmos-menu ()
 "Mostra os algoritmos disponiveis no menu"
     (progn
-        (format t "~%o                                   o")
-        (format t "~%|      - Escolha o algoritmo -      |")
-        (format t "~%|                                   |")
-        (format t "~%|         1 - Breadth-First         |")
-        (format t "~%|          2 - Depth-First          |")
-        (format t "~%|              3 - A*               |")
-        (format t "~%|                                   |")
-        (format t "~%|            0 - Voltar             |")
-        (format t "~%o                                   o")
+        (format t "~%o                                    o")
+        (format t "~%|      - Escolha o algoritmo -       |")
+        (format t "~%|                                    |")
+        (format t "~%|    1 - Breadth-First (iterativo)   |")
+        (format t "~%|    2 - Breadth-First (recursivo)   |")
+        (format t "~%|    3 - Depth-First                 |")
+        (format t "~%|    4 - A*                          |")
+        (format t "~%|                                    |")
+        (format t "~%|            0 - Voltar              |")
+        (format t "~%o                                    o")
         (format t "~%~%>> ")
     )
 )
@@ -153,8 +157,14 @@
 )
 
 ;; FUNCAO INACABADA
-;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade>)
-#|
+;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <pontuacao> <profundidade>)
+
+;; <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade> <>)
+;; <solucao>::= (<caminho-solucao> <n-abertos> <n-fechados>)
+;; <solucao-a*>::= (<caminho-solucao> <n-abertos> <n-fechados> <n-nos-expandidos>)
+
+;; (bfs-recursivo (third (escolher-problema 1)) (second (escolher-problema 1)) 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial)
+
 (defun opcao-algoritmo ()
 "Recebe a opcao de algoritmo do utilizador e executa-o"
     (progn
@@ -164,50 +174,74 @@
                     ((or (< opcao 0) (> opcao 4)) (progn (format t "Escolha uma opção válida!~%") (opcao-algoritmo)))
                     ((not (numberp opcao)) (progn (format t "Escolha uma opção válida!~%")))
                     (T (let* (
-                                (no-tabuleiro (opcao-tabuleiro 'opcao-algoritmo))
-                                (objetivo (opcao-objetivo))
-                                (id-tabuleiro (code-char (+ (first no-tabuleiro) 64)))
-                                (tabuleiro (second no-tabuleiro))
-                                (no (list (criar-no tabuleiro nil objetivo)))
+                                (id-tabuleiro (opcao-tabuleiro 'opcao-algoritmo))
+                                (problema (escolher-problema id-tabuleiro))
+                                (nome (nome-problema problema))
+                                (tabuleiro (tabuleiro-problema problema))
+                                (objetivo (pontuacao-problema problema))
+                                (hora-inicio (hora-atual))
+                                (hora-fim (hora-atual))
                             )
                         (ecase opcao
                             (1
-                                (let ((solucao (list id-tabuleiro 'BFS objetivo (hora-atual) (bfs 'expandir-no no) (hora-atual))))
+                                (let* (
+                                    (solucao (bfs-iterativo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicionar-cavalo))
+                                    (caminho-solucao (no-tabuleiro (car solucao)))
+                                    (pontuacao (no-pontos-atual (caar solucao)))
+                                    (profundidade (no-profundidade (caar solucao)))
+                                    (resultado (list nome 'BFS-iterativo objetivo hora-inicio caminho-solucao hora-fim pontuacao profundidade)))
                                     (progn 
-                                        (ficheiro-estatisticas solucao) 
-                                        solucao
+                                        ;;(ficheiro-estatisticas resultado) 
+                                        resultado
                                     )
                                 )
                             )
                             (2
-                                (let* (
-                                        (profundidade (opcao-profundidade))
-                                        (solucao (list id-tabuleiro 'DFS objetivo (hora-atual) (dfs 'expandir-no profundidade no) (hora-atual) profundidade))
-                                    )
-                                    (progn
-                                        (ficheiro-estatisticas solucao)
-                                        solucao
+                                (let (                                    
+                                    (solucao (bfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicionar-cavalo))
+                                    (caminho-solucao (no-tabuleiro (car solucao)))
+                                    (pontuacao (no-pontos-atual (caar solucao)))
+                                    (profundidade (no-profundidade (caar solucao)))
+                                    (resultado (list nome 'BFS-iterativo objetivo hora-inicio caminho-solucao hora-fim pontuacao profundidade)))
+                                    (progn 
+                                        ;;(ficheiro-estatisticas resultado) 
+                                        resultado
                                     )
                                 )
                             )
+                            #|
                             (3
                                 (let* (
-                                        (heuristica (opcao-heuristica))
-                                        (solucao (list id-tabuleiro 'A* objetivo (hora-atual) (a* 'expandir-no-a* heuristica no) (hora-atual)))
+                                        (profundidade (opcao-profundidade))
+                                        (resultado (list id-tabuleiro 'DFS objetivo (hora-atual) (dfs 'gerar-sucessores profundidade no) (hora-atual) profundidade))
                                     )
                                     (progn
-                                        (ficheiro-estatisticas solucao)
-                                        solucao
+                                        (ficheiro-estatisticas resultado)
+                                        resultado
                                     )
                                 )
                             )
+                            |#
+                            #|
+                            (4
+                                (let* (
+                                        (heuristica (opcao-heuristica))
+                                        (resultado (list id-tabuleiro 'A* objetivo (hora-atual) (a* 'expandir-no-a* heuristica no) (hora-atual)))
+                                    )
+                                    (progn
+                                        (ficheiro-estatisticas resultado)
+                                        resultado
+                                    )
+                                )
+                            )
+                            |#
                         )
                     ))
             )
         )
     )
 )
-|#
+
 
 #|
 (defun opcao-profundidade ()
@@ -282,7 +316,7 @@
 )
 
 (defun nome-problema (problema)
-    (first problema)
+    (string-upcase (first problema))
 )
 
 ;; (print-tabuleiro (ler-tabuleiros))
@@ -291,7 +325,7 @@
     (if (<= indice 0) nil      
         (let ((tabuleiroEscolhido (escolher-problema indice)))
             (progn
-                (format stream "Problema ~a" (string-upcase (nome-problema tabuleiroEscolhido)))
+                (format stream "Problema ~a" (nome-problema tabuleiroEscolhido))
                 (format t "~%")
                 (format stream "Pontos necessários: ~d" (pontuacao-problema tabuleiroEscolhido))
                 (format t "~%")
@@ -341,14 +375,14 @@
         )
     )
 )
-
+|#
 (defun hora-atual ()
 "Retorna a hora atual (hh mm ss)"
     (multiple-value-bind (s m h)
             (get-decoded-time)
         (format nil "~a:~a:~a" h m s))
 )
-
+#|
 (defun estatisticas (stream id-tabuleiro algoritmo objetivo caminho-solucao hora-inicio hora-fim &optional profundidade)
 "Solução e dados de eficiência para os algoritmos"
     (progn
