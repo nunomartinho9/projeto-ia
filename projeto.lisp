@@ -25,16 +25,7 @@
                     )
                     (2 (progn
                             (let ((resultado (opcao-algoritmo)))
-                                (progn
-                                    (format t "~%Tabuleiro ~a" (first resultado))
-                                    (format t "~%  - Algoritmo ~a" (second resultado))
-                                    (format t "~%  - Objetivo: ~a" (third resultado))
-                                    (format t "~%  - Solução:")
-                                    (if (fifth solucao)
-                                        ;;(print-tabuleiro (fifth solucao)) ALTERAR POR NOVO PRINT DO NUNITO
-                                        (format t "~%~t~t~t Solução não encontrada.~%")
-                                    )
-                                )
+                                (format-solucao resultado)
                             )
                             (iniciar)
                         )
@@ -110,6 +101,9 @@
         (format t "~%o                                             o")
         (format t "~%|      - Defina a profundidade máxima         |")
         (format t "~%|                a utilizar -                 |")
+        (format t "~%|                                             |")
+        (format t "~%|      1 - Usar profundidade padrão (20)      |")
+        (format t "~%|      2 - Inserir outro valor                |")
         (format t "~%|                                             |")
         (format t "~%|                0 - Voltar                   |")
         (format t "~%o                                             o")
@@ -226,8 +220,6 @@
     )
 )
 
-
-#|
 (defun opcao-profundidade ()
 "Recebe um valor de profundidade máxima do utilizador"
     (if (not (profundidade-menu))
@@ -244,7 +236,6 @@
         )
     )
 )
-|#
 
 #|
 (defun opcao-heuristica ()
@@ -273,6 +264,7 @@
 |#
 
 ;; ============ FORMATAR SOLUCAO ============
+;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim>)
 
 (defun format-no-solucao (no &optional (stream t))
   
@@ -297,16 +289,27 @@
   (format t "~%~%")
   )
 
-(defun format-solucao (problema-id solucao &optional (stream t))
-  
-  
-  (format stream "========================================================~%")
-  (format stream "~t~t~t~tProblema: ~a~tObjetivo: ~a~%" problema-id (solucao-no-pontos-obj (no-caminho-solucao-primeiro solucao)))
-  (format stream "Uma Solução foi encontrada! Resultados abaixo!~%")
-  (format stream "========================================================~%")
-  (format-nos-solucao (reverse (solucao-nos solucao)))
-  (format stream "Restantes estatisticas guardadas no ficheiro resultados.dat~%")
-  (format stream "~%")
+(defun format-solucao (resultado &optional (stream t))
+  (let* (
+        (problema-id (first resultado))
+        (algoritmo (second resultado))
+        (objetivo (third resultado))
+        (solucao (fifth resultado))
+    )
+    (format stream "========================================================~%")
+    (format stream "~t~t~t~tProblema: ~a~tObjetivo: ~a~tAlgoritmo: ~a~%" problema-id objetivo algoritmo)
+    (if solucao
+        (progn
+            (format stream "Uma Solução foi encontrada! Resultados abaixo!~%")
+            (format stream "========================================================~%")
+            (format-nos-solucao (reverse (solucao-nos solucao)))
+            (format stream "Restantes estatisticas guardadas no ficheiro resultados.dat~%")
+            (format stream "~%"))
+        (progn
+            (format stream "Não foi encontrada uma solução!~%")
+            (format stream "========================================================~%"))
+    )
+  )
 )
 
 ;; ============= INPUT/OUTPUT =============
