@@ -30,7 +30,7 @@
                                     (format t "~%  - Algoritmo ~a" (second solucao))
                                     (format t "~%  - Solução:")
                                     (if (fifth solucao)
-                                        (print-tabuleiro (fifth solucao))
+                                        ;;(print-tabuleiro (fifth solucao)) PRINT-SOLUCAO NA FUNFA
                                         (format t "~%~t~t~t Não existe solução.~%")
                                     )
                                 )
@@ -93,10 +93,10 @@
         (format t "~%o                                    o")
         (format t "~%|      - Escolha o algoritmo -       |")
         (format t "~%|                                    |")
-        (format t "~%|    1 - Breadth-First (iterativo)   |")
-        (format t "~%|    2 - Breadth-First (recursivo)   |")
-        (format t "~%|    3 - Depth-First                 |")
-        (format t "~%|    4 - A*                          |")
+        ;;(format t "~%|    1 - Breadth-First (iterativo)   |")
+        (format t "~%|    1 - Breadth-First (recursivo)   |")
+        (format t "~%|    2 - Depth-First                 |")
+        (format t "~%|    3 - A*                          |")
         (format t "~%|                                    |")
         (format t "~%|            0 - Voltar              |")
         (format t "~%o                                    o")
@@ -183,6 +183,7 @@
                                 (hora-fim (hora-atual))
                             )
                         (ecase opcao
+                        #| 
                             (1
                                 (let* (
                                     (solucao (bfs-iterativo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicionar-cavalo))
@@ -196,13 +197,13 @@
                                     )
                                 )
                             )
-                            (2
-                                (let (                                    
-                                    (solucao (bfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicionar-cavalo))
-                                    (caminho-solucao (no-tabuleiro (car solucao)))
-                                    (pontuacao (no-pontos-atual (caar solucao)))
-                                    (profundidade (no-profundidade (caar solucao)))
-                                    (resultado (list nome 'BFS-iterativo objetivo hora-inicio caminho-solucao hora-fim pontuacao profundidade)))
+                            |#
+                            (1
+                                (let* (                                    
+                                    (solucao (bfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial))
+                                    (pontuacao (third (caar solucao)))
+                                    (profundidade (fourth (caar solucao)))
+                                    (resultado (list nome 'BFS-recursivo objetivo hora-inicio solucao hora-fim pontuacao profundidade)))
                                     (progn 
                                         ;;(ficheiro-estatisticas resultado) 
                                         resultado
@@ -210,7 +211,7 @@
                                 )
                             )
                             #|
-                            (3
+                            (2
                                 (let* (
                                         (profundidade (opcao-profundidade))
                                         (resultado (list id-tabuleiro 'DFS objetivo (hora-atual) (dfs 'gerar-sucessores profundidade no) (hora-atual) profundidade))
@@ -223,7 +224,7 @@
                             )
                             |#
                             #|
-                            (4
+                            (3
                                 (let* (
                                         (heuristica (opcao-heuristica))
                                         (resultado (list id-tabuleiro 'A* objetivo (hora-atual) (a* 'expandir-no-a* heuristica no) (hora-atual)))
