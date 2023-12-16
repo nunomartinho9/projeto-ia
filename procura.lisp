@@ -11,10 +11,8 @@
   "Algoritmo BFS recursivo para resolver o problema do cavalo."
 
   (let* ((no-inicial (criar-no-inicial tabuleiro pontos-objetivo))
-         (primeiros-sucressores 
-          (if (funcall fn-pos-cavalo tabuleiro) (list no-inicial) (gerar-sucessores no-inicial tabuleiros-cavalo-inicial fn-calcular-pontos))
-          
-          )
+         (primeiros-sucressores
+          (if (funcall fn-pos-cavalo tabuleiro) (list no-inicial) (gerar-sucessores no-inicial tabuleiros-cavalo-inicial fn-calcular-pontos)))
          (abertos primeiros-sucressores))
     (bfs-recursivo-aux abertos '() (lambda (no) (gerar-sucessores no expandir-nos fn-calcular-pontos)))))
 
@@ -36,17 +34,14 @@
             (setq abertos (append abertos (gerar-sucessores no-atual expandir-nos fn-calcular-pontos)))))))|#
 
 ;; DFS RECURSIVO
-(defun dfs-recursivo (tabuleiro pontos-objetivo expandir-nos fn-calcular-pontos fn-pos-cavalo tabuleiros-cavalo-inicial &optional(d 20))
+(defun dfs-recursivo (tabuleiro pontos-objetivo expandir-nos fn-calcular-pontos fn-pos-cavalo tabuleiros-cavalo-inicial &optional (d 20))
   "Algoritmo DFS recursivo para resolver o problema do cavalo."
 
   (let* ((no-inicial (criar-no-inicial tabuleiro pontos-objetivo))
-         (primeiros-sucressores 
-          (if (funcall fn-pos-cavalo tabuleiro) (list no-inicial) (gerar-sucessores no-inicial tabuleiros-cavalo-inicial fn-calcular-pontos))
-          
-          )
+         (primeiros-sucressores
+          (if (funcall fn-pos-cavalo tabuleiro) (list no-inicial) (gerar-sucessores no-inicial tabuleiros-cavalo-inicial fn-calcular-pontos)))
          (abertos primeiros-sucressores))
     (dfs-recursivo-aux abertos '() (lambda (no) (gerar-sucessores no expandir-nos fn-calcular-pontos)) d)))
-
 
 
 ;; ============= AUX ALGORITMOS =============
@@ -70,12 +65,10 @@
             (novos-fechados (append fechados (list no-atual)))
             (sucessores (funcall expandir-nos no-atual))
             (novos-abertos (append (cdr abertos) sucessores)))
-       (cond 
+       (cond
         ((verificar-solucao no-atual) (list (caminho-solucao no-atual) (length abertos) (length fechados)))
         ((>= (no-profundidade no-atual) d) (dfs-recursivo-aux (cdr abertos) novos-fechados expandir-nos d))
-        (t (dfs-recursivo-aux novos-abertos novos-fechados expandir-nos d))
-        )
-       ))))
+        (t (dfs-recursivo-aux novos-abertos novos-fechados expandir-nos d)))))))
 #|
   (if (verificar-solucao no-atual)
            (list (caminho-solucao no-atual) (length abertos) (length fechados))
@@ -86,7 +79,6 @@
   (if resultado
       (print resultado)
       (print "Sem solução")))|#
-
 
 
 ;; ============= AUXILIARES =============
@@ -118,15 +110,15 @@
 ;; <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade> <>)
 (defun no-teste ()
   '(((nil 05 nil nil nil 15 nil nil nil 25)
-    (nil nil nil 06 nil nil nil 16 nil nil)
-    (nil 04 nil nil nil 14 nil nil nil 24)
-    (nil nil nil 07 nil nil nil 17 nil nil)
-    (nil 03 nil nil nil 13 nil nil nil 23)
-    (nil nil nil 08 nil nil nil 18 nil nil)
-    (nil 02 nil nil nil 12 nil nil nil 22)
-    (nil nil nil 09 nil nil nil 19 nil nil)
-    (nil 01 nil nil nil 11 nil nil nil 21)
-    (nil nil nil 10 nil nil nil 20 nil nil))
+     (nil nil nil 06 nil nil nil 16 nil nil)
+     (nil 04 nil nil nil 14 nil nil nil 24)
+     (nil nil nil 07 nil nil nil 17 nil nil)
+     (nil 03 nil nil nil 13 nil nil nil 23)
+     (nil nil nil 08 nil nil nil 18 nil nil)
+     (nil 02 nil nil nil 12 nil nil nil 22)
+     (nil nil nil 09 nil nil nil 19 nil nil)
+     (nil 01 nil nil nil 11 nil nil nil 21)
+     (nil nil nil 10 nil nil nil 20 nil nil))
 
     NIL
     300
@@ -142,11 +134,6 @@
   "Recebe o tabuleiro inicial e os pontos objetivo e cria o primeiro nó."
   (criar-no tabuleiro nil pontos-objetivo))
 
-(defun gerar-primeiro-sucessor (no fn-primeira-jogada fn-calcular-pontos)
-
-  (let ((prox-tabuleiro (funcall fn-primeira-jogada (no-tabuleiro no))))
-
-    (criar-no prox-tabuleiro no (no-pontos-final no) (funcall fn-calcular-pontos (no-pontos-atual no) (no-tabuleiro no) prox-tabuleiro) 1)))
 
 ;; (gerar-sucessores (no-teste) 'usar-operadores 'calcular-pontos)
 (defun gerar-sucessores (no-atual fn-expandir-no fn-calcular-pontos)
@@ -157,9 +144,13 @@
               (criar-no tab no-atual (no-pontos-final no-atual) (funcall fn-calcular-pontos (no-pontos-atual no-atual) (no-tabuleiro no-atual) tab) (+ 1 (no-profundidade no-atual)))) (funcall fn-expandir-no (no-tabuleiro no-atual))))
 
 
-
 ;; ============= SELETORES =============
 
+;; <caminho-solucao>::= (lista (<tabuleiro> <pontos-obj> <pontos-atual> <profundidade>) ... )
+;; <solucao>::= (<caminho-solucao> <n-abertos> <n-fechados>)
+;; <solucao-a*>::= (<caminho-solucao> <n-abertos> <n-fechados> <n-nos-expandidos>)
+
+;; NO
 (defun no-tabuleiro (no)
   "retorna o tabuleiro do nó"
   (first no))
@@ -180,19 +171,71 @@
   "retona a profundidade atual do nó"
   (fifth no))
 
-;; ============ AINDA POR TESTAR NAO MEXER AQUI EM BAIXO ============
-;; ============ MEDIDAS DE DESEMPENHO ============
+;; SOLUCAO
+(defun solucao-nos (solucao)
+  "Buscar o caminho-solucao (lista de nos desde o inicial até ao no-solucao)"
+  (first solucao))
 
-;; <solucao>::= (<caminho-solucao> <n-abertos> <n-fechados>)
-;; <solucao-a*>::= (<caminho-solucao> <n-abertos> <n-fechados> <n-nos-expandidos>)
+(defun solucao-abertos (solucao)
+  "Buscar o numero de abertos da solucao"
+  (second solucao))
+
+(defun solucao-fechados (solucao)
+  "Buscar o numero de fechados/expandidos da solucao"
+  (third solucao))
+
+;; CAMINHO SOLUCAO
+(defun no-caminho-solucao (index solucao)
+  "Retorna um dos nós do caminho-solução no index recebido (começa no 0)."
+  (if (and (>= index 0) (< index (tamanho-solucao solucao)))
+      (nth index (solucao-nos solucao))
+      NIL))
+
+
+(defun no-caminho-solucao-primeiro (solucao)
+  "Buscar o primeiro NO no caminho-solucao. (este NO deve ser o no solucao)"
+  (no-caminho-solucao 0 solucao))
+
+(defun no-caminho-solucao-ultimo (solucao)
+  "Buscar o ultimo NO no caminho-solucao. (este NO deve ser o no inicial)"
+  (no-caminho-solucao (1- (tamanho-solucao solucao)) solucao))
+
+;;(solucao-no-tabuleiro (no-caminho-solucao-primeiro solucao-inteira))
+
+(defun solucao-no-pontos-obj (solucao-no)
+  "retorna os pontos objetivo do nó (da nova estrutura de nos que está no caminho-solucao)"
+  (second solucao-no))
+
+(defun solucao-no-pontos-atual (solucao-no)
+  "retorna a pontuação atual "
+  (third solucao-no))
+
+(defun solucao-no-profundidade (solucao-no)
+  "retona a profundidade atual do nó (da nova estrutura de nos que está no caminho-solucao)"
+  (fourth solucao-no))
+
+(defun tamanho-solucao (solucao)
+  "Retorna o tamanho da solucao"
+  (length (solucao-nos solucao)))
+
+(defun num-nos-gerados (solucao)
+  "Retorna o numero de nos gerados"
+  (+ (solucao-abertos solucao) (solucao-fechados solucao)))
+
+(defun num-nos-expandidos-a* (solucao)
+  "Retorna o numero de nos expandidos (a*)"
+  (fourth solucao))
+
+
+;; ============ MEDIDAS DE DESEMPENHO ============
 
 ;; fator de ramificação média
 (defun fator-ramificacao-media (lista &optional (L (tamanho-solucao lista)) (valor-T (num-nos-gerados lista)) (B-min 0) (B-max valor-T) (margem 0.1))
   "Retorna o fator de ramificacao media (metodo bisseccao)"
-(float  (let ((B-avg (/ (+ B-min B-max) 2)))
-    (cond ((< (- B-max B-min) margem) (/ (+ B-max B-min) 2))
-          ((< (aux-ramificacao B-avg L valor-T) 0) (fator-ramificacao-media lista L valor-T B-avg B-max margem))
-          (T (fator-ramificacao-media lista L valor-T B-min B-avg margem))))))
+  (float (let ((B-avg (/ (+ B-min B-max) 2)))
+           (cond ((< (- B-max B-min) margem) (/ (+ B-max B-min) 2))
+                 ((< (aux-ramificacao B-avg L valor-T) 0) (fator-ramificacao-media lista L valor-T B-avg B-max margem))
+                 (T (fator-ramificacao-media lista L valor-T B-min B-avg margem))))))
 
 ;; B + B^2 + ... + B^L = T
 (defun aux-ramificacao (B L valor-T)
@@ -200,26 +243,6 @@
    ((= 1 L) (- B valor-T))
    (T (+ (expt B L) (aux-ramificacao B (- L 1) valor-T)))))
 
-(defun tamanho-solucao (lista)
-  "Retorna o tamanho da solucao"
-  (length (car lista)))
-
-(defun num-nos-gerados (lista)
-  "Retorna o numero de nos gerados"
-  (+ (second lista) (third lista)))
-
-(defun num-nos-expandidos (lista)
-  "Retorna o numero de nos expandidos"
-  (third lista))
-
-(defun num-nos-expandidos-a* (lista)
-  "Retorna o numero de nos expandidos (a*)"
-  (fourth lista))
-
-(defun penetrancia (lista)
+(defun penetrancia (solucao)
   "Calcula a penetrancia"
-  (float (/ (length (car lista)) (num-nos-gerados lista))))
-
-(defun no-solucao (lista)
-  "Retorna o no solucao"
-  (nth (1- (length (car lista))) (car lista)))
+  (float (/ (tamanho-solucao solucao) (num-nos-gerados solucao))))
