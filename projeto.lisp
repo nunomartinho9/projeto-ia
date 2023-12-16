@@ -2,7 +2,7 @@
 ;;  escreve e lê ficheiros, e trata da interação com o utilizador
 ;;  Autores: Nuno Martinho & João Coelho.
 
-;; (bfs-recursivo (third (escolher-problema 1)) (second (escolher-problema 1)) 'usar-operadores 'calcular-pontos 'posicionar-cavalo)
+;;(bfs-recursivo (third (escolher-problema 1)) (second (escolher-problema 1)) 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial)
 ;; ============ CARREGAR FICHEIROS ============
 
 (load "procura.lisp")
