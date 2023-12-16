@@ -14,24 +14,24 @@
 "Inicializa o programa"
     (menu)
     (let ((opcao (read)))
-        (if 
-            (or (not (numberp opcao)) (< opcao 1) (> opcao 3))
-                (progn (format t "Escolha uma opção válida!") (iniciar))
-                (ecase opcao
-                    (1 (progn 
-                            (print-tabuleiros)
-                            (iniciar)
-                        )
-                    )
-                    (2 (progn
-                            (let ((resultado (opcao-algoritmo)))
+        (case opcao
+            (1 
+                (progn 
+                    (print-tabuleiros)
+                    (iniciar)
+            ))
+            (2
+                (progn
+                    (let ((resultado (opcao-algoritmo)))
                                 (format-solucao resultado)
-                            )
-                            (iniciar)
-                        )
                     )
-                    (3 (progn (format t "Obrigado por jogar!~%~%") (quit)))
-                )
+                    (iniciar)
+            ))
+            (3 
+                (progn (format t "Obrigado por jogar!~%~%") (quit)
+            ))
+
+            (otherwise (progn (format t "Escolha uma opção válida!") (iniciar)))    
         )
     )
 )
@@ -151,7 +151,7 @@
 )
 
 ;; FUNCAO INACABADA
-;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim>)
+;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>)
 
 ;; <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade> <>)
 ;; <solucao>::= (<caminho-solucao> <n-abertos> <n-fechados>)
@@ -190,8 +190,8 @@
                             
                             (2
                                 (let* (
-                                        (profundidade (opcao-profundidade))
-                                        (resultado (list nome 'DFS objetivo hora-inicio (dfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial profundidade) hora-fim))
+                                        (profundidade-max (opcao-profundidade))
+                                        (resultado (list nome 'DFS objetivo hora-inicio (dfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial profundidade-max) hora-fim profundidade-max))
                                     )
                                     (progn
                                         resultado
@@ -297,13 +297,17 @@
         (algoritmo (second resultado))
         (objetivo (third resultado))
         (solucao (fifth resultado))
+        (profundidade-max (seventh resultado))
     )
     (format stream "====================================================~%")
     (format stream "~tProblema ~a~tObjetivo: ~a~%" problema-id objetivo)
-    (format stream "~tAlgoritmo ~a~%~%" algoritmo)
+    (format stream "~tAlgoritmo ~a~%" algoritmo)
+    (if profundidade-max
+        (format stream "~tProfundidade máxima: ~a~%" profundidade-max)
+    )
     (if solucao
         (progn
-            (format stream "~tUma solução foi encontrada!~%")
+            (format stream "~%~tUma solução foi encontrada!~%")
             (format stream "===================================================~%~%")
             (format-nos-solucao (reverse (solucao-nos solucao)))
             (format stream "===========================================================~%")
