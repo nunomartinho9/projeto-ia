@@ -272,6 +272,42 @@
 )
 |#
 
+;; ============ FORMATAR SOLUCAO ============
+
+(defun format-no-solucao (no &optional (stream t))
+  
+    "Formata o tabuleiro"
+  (not (null (mapcar #'(lambda (l)
+                         (progn
+                          ;;(format stream "Objetivo: ~a~tPontos: ~a~tProfundidade: ~a" (solucao-no-pontos-obj no) (solucao-no-pontos-atual no) (solucao-no-profundidade no))
+                          (mapcar #'(lambda (e)
+                                      (format stream "~5a" e)) l)
+                          (format stream "~%"))) (no-tabuleiro no))))
+  (format t "~%")
+  )
+
+(defun format-nos-solucao (nos &optional (stream t))
+  
+    
+  (not (null (mapcar #'(lambda (l)
+                         (progn
+                          (format stream "Pontos: ~a~tProfundidade: ~a~%"(solucao-no-pontos-atual l) (solucao-no-profundidade l))
+                          (format-no-solucao l)
+                          (format stream "------------------------------------------------~%"))) nos)))
+  (format t "~%~%")
+  )
+
+(defun format-solucao (problema-id solucao &optional (stream t))
+  
+  
+  (format stream "========================================================~%")
+  (format stream "~t~t~t~tProblema: ~a~tObjetivo: ~a~%" problema-id (solucao-no-pontos-obj (no-caminho-solucao-primeiro solucao)))
+  (format stream "Uma Solução foi encontrada! Resultados abaixo!~%")
+  (format stream "========================================================~%")
+  (format-nos-solucao (reverse (solucao-nos solucao)))
+  (format stream "Restantes estatisticas guardadas no ficheiro resultados.dat~%")
+  (format stream "~%")
+)
 
 ;; ============= INPUT/OUTPUT =============
 
