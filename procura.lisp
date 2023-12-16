@@ -7,15 +7,18 @@
 
 ;;(bfs-recursivo (tabuleiro-jogado) 100 'usar-operadores 'calcular-pontos 'posicionar-cavalo)
 ;;(bfs-recursivo (tabuleiro-teste) 100 'usar-operadores 'calcular-pontos 'posicionar-cavalo)
-(defun bfs-recursivo (tabuleiro pontos-objetivo expandir-nos fn-calcular-pontos fn-primeira-jogada)
+(defun bfs-recursivo (tabuleiro pontos-objetivo expandir-nos fn-calcular-pontos fn-pos-cavalo tabuleiros-cavalo-inicial)
   "Algoritmo BFS recursivo para resolver o problema do cavalo."
 
   (let* ((no-inicial (criar-no-inicial tabuleiro pontos-objetivo))
-         (primeiro-sucessor (gerar-primeiro-sucessor no-inicial fn-primeira-jogada fn-calcular-pontos))
-         (abertos (list primeiro-sucessor)))
+         (primeiros-sucressores 
+          (if (funcall fn-pos-cavalo tabuleiro) (list no-inicial) (gerar-sucessores no-inicial tabuleiros-cavalo-inicial fn-calcular-pontos))
+          
+          )
+         (abertos primeiros-sucressores))
     (bfs-recursivo-aux abertos '() (lambda (no) (gerar-sucessores no expandir-nos fn-calcular-pontos)))))
 
-
+#|
 ;; BFS ITERATIVO
 (defun bfs-iterativo (tabuleiro pontos-objetivo expandir-nos fn-calcular-pontos fn-primeira-jogada)
   "Algoritmo BFS iterativo para resolver o problema do cavalo."
@@ -23,15 +26,27 @@
          (primeiro-sucessor (gerar-primeiro-sucessor no-inicial fn-primeira-jogada fn-calcular-pontos))
          (abertos (list primeiro-sucessor))
          (fechados '()))
-    
-    (loop while abertos
-          for no-atual = (pop abertos)
+
+    (loop until (null abertos)
           do
-          (setq fechados (append fechados (list no-atual)))
-          (if (verificar-solucao no-atual)
-              (return-from bfs-iterativo (list (caminho-solucao no-atual) (length abertos) (length fechados))))
-          (let ((sucessores (gerar-sucessores no-atual expandir-nos fn-calcular-pontos)))
-            (setq abertos (append abertos sucessores))))))
+          (let ((no-atual (pop abertos)))
+            (setq fechados (append fechados (list no-atual)))
+            (if (verificar-solucao no-atual)
+                (return (caminho-solucao no-atual)))
+            (setq abertos (append abertos (gerar-sucessores no-atual expandir-nos fn-calcular-pontos)))))))|#
+
+;; DFS RECURSIVO
+(defun dfs-recursivo (tabuleiro pontos-objetivo expandir-nos fn-calcular-pontos fn-pos-cavalo tabuleiros-cavalo-inicial &optional(d 20))
+  "Algoritmo DFS recursivo para resolver o problema do cavalo."
+
+  (let* ((no-inicial (criar-no-inicial tabuleiro pontos-objetivo))
+         (primeiros-sucressores 
+          (if (funcall fn-pos-cavalo tabuleiro) (list no-inicial) (gerar-sucessores no-inicial tabuleiros-cavalo-inicial fn-calcular-pontos))
+          
+          )
+         (abertos primeiros-sucressores))
+    (dfs-recursivo-aux abertos '() (lambda (no) (gerar-sucessores no expandir-nos fn-calcular-pontos)) d)))
+
 
 
 ;; ============= AUX ALGORITMOS =============
@@ -47,6 +62,25 @@
            (list (caminho-solucao no-atual) (length abertos) (length fechados))
            (bfs-recursivo-aux novos-abertos novos-fechados expandir-nos))))))
 
+(defun dfs-recursivo-aux (abertos fechados expandir-nos d)
+  (cond
+   ((null abertos) '())
+   (t
+     (let* ((no-atual (car abertos))
+            (novos-fechados (append fechados (list no-atual)))
+            (sucessores (funcall expandir-nos no-atual))
+            (novos-abertos (append (cdr abertos) sucessores)))
+       (cond 
+        ((verificar-solucao no-atual) (list (caminho-solucao no-atual) (length abertos) (length fechados)))
+        ((>= (no-profundidade no-atual) d) (dfs-recursivo-aux (cdr abertos) novos-fechados expandir-nos d))
+        (t (dfs-recursivo-aux novos-abertos novos-fechados expandir-nos d))
+        )
+       ))))
+#|
+  (if (verificar-solucao no-atual)
+           (list (caminho-solucao no-atual) (length abertos) (length fechados))
+           (bfs-recursivo-aux novos-abertos novos-fechados expandir-nos))
+|#
 #|Exemplo de uso:
 (let ((resultado (bfs-iterativo (tabuleiro-jogado) 100 'usar-operadores 'calcular-pontos 'posicionar-cavalo)))
   (if resultado
@@ -83,7 +117,7 @@
 ;; ============= NOS =============
 ;; <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade> <>)
 (defun no-teste ()
-  '(((nil 05 nil nil nil 15 nil nil nil T)
+  '(((nil 05 nil nil nil 15 nil nil nil 25)
     (nil nil nil 06 nil nil nil 16 nil nil)
     (nil 04 nil nil nil 14 nil nil nil 24)
     (nil nil nil 07 nil nil nil 17 nil nil)
@@ -96,7 +130,7 @@
 
     NIL
     300
-    25
+    0
     0))
 
 

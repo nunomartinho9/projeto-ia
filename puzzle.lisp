@@ -177,6 +177,21 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
       ;;ja existe cavalo por isso nao fazer nada (devolver tabuleiro).
       tabuleiro))
 
+
+
+(defun posicionar-cavalo2 (tabuleiro &optional(lin 0) (col 0))
+  (substituir lin col tabuleiro T)
+  
+  )
+
+(defun tabuleiros-cavalo-inicial (tabuleiro-sem-cavalo)
+  (mapcar #'(lambda (pos)
+              (posicionar-cavalo2 tabuleiro-sem-cavalo (car pos) (cadr pos))
+              ) 
+      (casas-validas-posicoes tabuleiro-sem-cavalo))
+  
+  )
+
 ;; (n-simetrico 96)
 ;; 69
 (defun n-simetrico (num &optional (sim 0))
