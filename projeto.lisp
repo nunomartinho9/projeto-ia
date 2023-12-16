@@ -139,7 +139,10 @@
                             (progn 
                                 (format t "Escolha uma opção válida!") (opcao-tabuleiro 'tabuleiros-menu)
                             )
-                            opcao
+                            ;;(if (eq opcao 6)
+                                
+                            ;;)
+                            opcao     
                         )
                     )
                   )
@@ -384,6 +387,18 @@
 ;;(ficheiro-estatisticas '(<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>))
 (defun ficheiro-estatisticas (resultado)
 "Ficheiro de resultados estatísticos (solução + dados estatísticos sobre a eficiência)."
+    (with-open-file (stream "resultados.dat" :direction :output :if-does-not-exist :create :if-exists :append)
+        (estatisticas stream resultado)
+    )
+)
+
+(defun duracao (hora-inicio hora-fim)
+"Calcula a diferença entre dois valores temporais."
+    (- hora-fim hora-inicio)
+)
+
+(defun estatisticas (stream resultado)
+"Solução e dados de eficiência para os algoritmos."
     (let* (
             (problema-id (first resultado))
             (algoritmo (second resultado))
@@ -393,50 +408,32 @@
             (hora-fim (sixth resultado))
             (profundidade (seventh resultado))
            )
-
-        (with-open-file (file "resultados.dat" :direction :output :if-does-not-exist :create :if-exists :append)
-            (ecase algoritmo
-                ('bfs (estatisticas file problema-id algoritmo objetivo hora-inicio solucao hora-fim))
-                ('dfs (estatisticas file problema-id algoritmo objetivo hora-inicio solucao hora-fim profundidade))
-                ('a* (estatisticas file problema-id algoritmo objetivo hora-inicio solucao hora-fim))
-            )
-        )
-    )
-)
-
-(defun duracao (hora-inicio hora-fim)
-"Calcula a diferença entre dois valores temporais."
-    (- hora-fim hora-inicio)
-)
-
-(defun estatisticas (file problema-id algoritmo objetivo hora-inicio solucao hora-fim &optional profundidade)
-"Solução e dados de eficiência para os algoritmos."
     (progn
-        (format file "~%Tabuleiro ~a" problema-id)
-        (format file "~% - Algoritmo: ~a" algoritmo)
-        (format file "~% - Objetivo: ~a pontos" objetivo)
+        (format stream "~%Tabuleiro ~a" problema-id)
+        (format stream "~% - Algoritmo: ~a" algoritmo)
+        (format stream "~% - Objetivo: ~a pontos" objetivo)
         (if (eql algoritmo 'DFS)
-            (format file "~% - Profundidade máxima: ~a" profundidade)
+            (format stream "~% - Profundidade máxima: ~a" profundidade)
         )
         (if solucao 
             (progn
-                (format file "~% - Solução encontrada ~%")
-                (format-nos-solucao (reverse (solucao-nos solucao)) file)
-                (format file "~% - Pontos: ~a" (solucao-no-pontos-atual (no-caminho-solucao-primeiro solucao)))
-                (format file "~% - Profundidade: ~a" (solucao-no-profundidade (no-caminho-solucao-primeiro solucao)))
-                (format file "~% - Nº nós gerados: ~a" (num-nos-gerados solucao))
+                (format stream "~% - Solução encontrada ~%")
+                (format-nos-solucao (reverse (solucao-nos solucao)) stream)
+                (format stream "~% - Pontos: ~a" (solucao-no-pontos-atual (no-caminho-solucao-primeiro solucao)))
+                (format stream "~% - Profundidade: ~a" (solucao-no-profundidade (no-caminho-solucao-primeiro solucao)))
+                (format stream "~% - Nº nós gerados: ~a" (num-nos-gerados solucao))
                 (if (eql algoritmo 'A*)
-                    (format file "~% - Nº nós expandidos: ~a" (num-nos-expandidos-a* solucao))
-                    (format file "~% - Nº nós expandidos: ~a" (solucao-fechados solucao))
+                    (format stream "~% - Nº nós expandidos: ~a" (num-nos-expandidos-a* solucao))
+                    (format stream "~% - Nº nós expandidos: ~a" (solucao-fechados solucao))
                 )
-                (format file "~% - Penetrância: ~f" (penetrancia solucao))
-                (format file "~% - Fator de ramificação média: ~f" (fator-ramificacao-media solucao))
-                (format file "~% - Duração: ~a segundo(s)" (duracao hora-inicio hora-fim))
-                (format file "~%~%~%")
+                (format stream "~% - Penetrância: ~f" (penetrancia solucao))
+                (format stream "~% - Fator de ramificação média: ~f" (fator-ramificacao-media solucao))
+                (format stream "~% - Duração: ~a segundo(s)" (duracao hora-inicio hora-fim))
+                (format stream "~%~%~%")
             )
         )
-    )
+    ))
 )
 
 
-;;(iniciar)
+(iniciar)
