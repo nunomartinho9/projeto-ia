@@ -10,7 +10,7 @@
 ;; ============= INICIAR =============
 
 (defun iniciar ()
-"Inicializa o programa"
+"Inicializa o programa."
     (menu)
     (let ((opcao (read)))
         (case opcao
@@ -36,7 +36,7 @@
 ;; ============= MENUS =============
 
 (defun menu ()
-  "Mostra o menu inicial"
+  "Mostra o menu inicial."
     (progn
         ;;(format t "~%A carregar jogo...~%")
         ;;(sleep 1)
@@ -52,7 +52,7 @@
 )
 
 (defun tabuleiros-menu (&optional (i 1) (problemas (ler-tabuleiros)))
-"Mostra os tabuleiros disponíveis no menu"
+"Mostra os tabuleiros disponíveis no programa."
     (cond ((null problemas) 
             (progn
                 (format t "~%|                                |")
@@ -77,7 +77,7 @@
 )
 
 (defun algoritmos-menu ()
-"Mostra os algoritmos disponiveis no menu"
+"Mostra os algoritmos disponíveis no programa."
     (progn
         (format t "~%o                                    o")
         (format t "~%|      - Escolha o algoritmo -       |")
@@ -93,7 +93,7 @@
 )
 
 (defun profundidade-menu ()
-"Mostra uma mensagem para escolher a profundidade"
+"Mostra uma mensagem para escolher a profundidade."
     (progn
         (format t "~%o                                             o")
         (format t "~%|      - Defina a profundidade máxima         |")
@@ -110,7 +110,7 @@
 )
 
 (defun heuristica-menu ()
-"Mostra uma mensagem para escolher a profundidade"
+"Mostra uma mensagem para escolher a heurística."
     (progn
         (format t "~%o                                                o")
         (format t "~%|       - Defina a heurística a utilizar -       |")
@@ -216,7 +216,7 @@
 )
 
 (defun opcao-profundidade ()
-"Recebe um valor de profundidade máxima do utilizador"
+"Recebe um valor de profundidade máxima do utilizador."
     (if (not (profundidade-menu))
         (let ((opcao (read)))
             (cond ((equal opcao 0) (opcao-tabuleiro))
@@ -319,7 +319,7 @@
 
 ;; (ler-tabuleiros)
 (defun ler-tabuleiros ()
-"Lê os tabuleiros no ficheiro problemas.dat"
+"Lê os tabuleiros no ficheiro problemas.dat."
     (with-open-file (stream "problemas.dat" :if-does-not-exist nil)
         (do ((result nil (cons next result))
                 (next (read stream nil 'eof) (read stream nil 'eof)))
@@ -334,20 +334,23 @@
 )
 
 (defun tabuleiro-problema (problema)
+"Devolve o tabuleiro do problema."
     (third problema)
 )
 
 (defun pontuacao-problema (problema)
+"Devolve a pontuação/objetivo do problema."
     (second problema)
 )
 
 (defun nome-problema (problema)
+"Devolve a letra do problema."
     (string-upcase (first problema))
 )
 
 ;; (print-tabuleiro (ler-tabuleiros))
 (defun print-tabuleiro (indice &optional (stream t))
-"Imprime um tabuleiro do ficheiro problemas.dat, indice comeca no 1"
+"Imprime um tabuleiro do ficheiro problemas.dat (índice começa no 1)."
     (if (<= indice 0) nil      
         (let ((tabuleiroEscolhido (escolher-problema indice)))
             (progn
@@ -363,6 +366,7 @@
 
 ;; (print-tabuleiros (ler-tabuleiros))
 (defun print-tabuleiros (&optional (ln 1))
+"Imprime todos os tabuleiros no ficheiro problemas.dat."
     (cond
         ((> ln (length (ler-tabuleiros))) (format T "------------------------------------~%") )
         (t 
@@ -379,7 +383,7 @@
 
 ;;(ficheiro-estatisticas '(<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>))
 (defun ficheiro-estatisticas (resultado)
-"Ficheiro de resultados estatísticos (solução + dados estatísticos sobre a eficiência)"
+"Ficheiro de resultados estatísticos (solução + dados estatísticos sobre a eficiência)."
     (let* (
             (problema-id (first resultado))
             (algoritmo (second resultado))
@@ -401,6 +405,7 @@
 )
 
 (defun duracao (hora-inicio hora-fim)
+"Calcula a diferença entre dois valores temporais."
     (- hora-fim hora-inicio)
 )
 
@@ -434,4 +439,4 @@
 )
 
 
-(iniciar)
+;;(iniciar)
