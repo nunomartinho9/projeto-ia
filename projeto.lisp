@@ -462,7 +462,12 @@
 
 (defun duracao (hora-inicio hora-fim)
 "Calcula a diferença entre dois valores temporais."
-    (- hora-fim hora-inicio)
+    (let ((diferenca (- hora-fim hora-inicio)))
+        (if (< diferenca 1)
+            (string "<1")
+            diferenca
+        )
+    )
 )
 
 (defun estatisticas (stream resultado)
