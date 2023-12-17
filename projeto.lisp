@@ -12,6 +12,7 @@
 (defun iniciar ()
 "Inicializa o programa."
     (menu)
+    (susbtituir-f-no-ficheiro)
     (let ((opcao (read)))
         (case opcao
             (1 
@@ -55,21 +56,24 @@
 "Mostra os tabuleiros disponíveis no programa."
     (cond ((null problemas) 
             (progn
-                (format t "~%|                                |")
-                (format t "~%|        0 - Voltar atrás        |") 
-                (format t "~%o                                o")
+                (format t "~%|                                 |")
+                (format t "~%|        0 - Voltar atrás         |") 
+                (format t "~%o                                 o")
                 (format t "~%~%>> ")
             )
         )
         (T (progn
                 (if (= i 1) 
                     (progn 
-                        (format t "~%o                                o")
-                        (format t "~%|    - Escolha o tabuleiro: -    |")
-                        (format t "~%|                                |")
+                        (format t "~%o                                 o")
+                        (format t "~%|    - Escolha o tabuleiro: -     |")
+                        (format t "~%|                                 |")
                     )
                 )
-                (format t "~%|        ~a - Tabuleiro ~a         |" i (code-char (+ i 64)))
+                (if (eq i 6)
+                    (format t "~%|    ~a - Tabuleiro ~a (aleatório)  |" i (code-char (+ i 64)))
+                    (format t "~%|    ~a - Tabuleiro ~a              |" i (code-char (+ i 64)))
+                )
                 (tabuleiros-menu (+ i 1) (cdr problemas))
             )
         )
@@ -139,9 +143,6 @@
                             (progn 
                                 (format t "Escolha uma opção válida!") (opcao-tabuleiro 'tabuleiros-menu)
                             )
-                            ;;(if (eq opcao 6)
-                                
-                            ;;)
                             opcao     
                         )
                     )
@@ -318,7 +319,7 @@
   )
 )
 
-;; ============= INPUT/OUTPUT =============
+;;; ============= INPUT/OUTPUT =============
 
 ;; (ler-tabuleiros)
 (defun ler-tabuleiros ()
@@ -382,6 +383,68 @@
     )
 )
 
+;; ============= TABULEIRO F =============
+
+(defun escrever-no-ficheiro (dados caminho-ficheiro)
+"Escrever no ficheiro passado como parâmetro."
+    (with-open-file (stream caminho-ficheiro :direction :output :if-exists :supersede)
+        (dolist (item dados)
+            (write item :stream stream)
+            (terpri stream)
+        )
+    )
+)
+
+(defun substituir-tabuleiro-f (dados novo-tabuleiro)
+"Substitui o tabuleiro do problema F."
+  (let ((dados-atualizados (mapcar (lambda (item)
+                                (if (and (listp item) (string= "f" (car item)))
+                                    (list (car item) (cadr item) novo-tabuleiro)
+                                    item)
+                                ) dados)
+        )) dados-atualizados
+    )
+)
+
+(defun susbtituir-f-no-ficheiro ()
+"Susbstitui o tabuleiro do problema F no ficheiro."
+    (let* ((dados-ficheiro (ler-tabuleiros))
+            (novo-tabuleiro (tabuleiro-aleatorio))
+        )
+        (when dados-ficheiro
+            (let ((dados-atualizados (substituir-tabuleiro-f dados-ficheiro novo-tabuleiro)))
+                (if dados-atualizados
+                    (escrever-no-ficheiro dados-atualizados "problemas.dat")
+                    (format t "Tabuleiro F não gerado!")
+                )
+            )
+        )
+    )
+)
+
+#|
+(defun substituir-valor-lista (lista indice novo-valor)
+"Susbtitui um valor numa lista."
+    (if (and (listp lista) (>= (length lista) (1+ indice)))
+        (let ((antes (subseq lista 0 indice))
+                (depois (subseq lista (1+ indice)))
+            )
+            (append antes (list novo-valor) depois)
+        )
+      (format t "O índice do elemento não consta na lista."))
+)
+
+(defun substituir-lista-ordenada (dados indice-lista nova-lista)
+    (if (and (listp dados) (>= (length dados) (1+ indice-lista)))
+        (let ((antes (subseq dados 0 indice-lista))
+                (depois (subseq dados (1+ indice-lista))))
+            (append antes (list nova-lista) depois))
+        (format t "O índice da lista está fora dos valores esperados.")
+    )
+)
+|#
+
+
 ;; ============= ESTATISTICAS =============
 
 ;;(ficheiro-estatisticas '(<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>))
@@ -436,4 +499,4 @@
 )
 
 
-(iniciar)
+;;(iniciar)
