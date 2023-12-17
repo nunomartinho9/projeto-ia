@@ -181,7 +181,7 @@
                         (ecase opcao
                             (1
                                 (let* (                                   
-                                    (resultado (list nome 'BFS objetivo (get-universal-time) (bfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial) (get-universal-time)))
+                                    (resultado (list nome 'BFS objetivo (get-internal-real-time) (bfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial) (get-internal-real-time)))
                                     )
                                     (progn
                                         (format-solucao resultado)
@@ -194,7 +194,7 @@
                             (2
                                 (let* (
                                         (profundidade-max (opcao-profundidade))
-                                        (resultado (list nome 'DFS objetivo (get-universal-time) (dfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial profundidade-max) (get-universal-time) profundidade-max))
+                                        (resultado (list nome 'DFS objetivo (get-internal-real-time) (dfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial profundidade-max) (get-internal-real-time) profundidade-max))
                                     )
                                     (progn
                                         (format-solucao resultado)
@@ -462,11 +462,12 @@
 
 (defun duracao (hora-inicio hora-fim)
 "Calcula a diferença entre dois valores temporais."
-    (let ((diferenca (- hora-fim hora-inicio)))
-        (if (< diferenca 1)
-            (string "<1")
-            diferenca
-        )
+    (let* ((diferenca (- hora-fim hora-inicio))
+        (milisegundos (/ diferenca 1000))
+        (segundos (floor (/ milisegundos 1000)))
+        (ms (mod (round milisegundos) 1000)))
+        
+        (format nil "~2,'0Ds ~3,'0,'0Dms" segundos ms)    
     )
 )
 
@@ -480,6 +481,7 @@
             (solucao (fifth resultado))
             (hora-fim (sixth resultado))
             (profundidade (seventh resultado))
+            (tempo (duracao hora-inicio hora-fim))
            )
     (progn
         (format stream "~%Tabuleiro ~a" problema-id)
@@ -501,7 +503,7 @@
                 )
                 (format stream "~% - Penetrância: ~f" (penetrancia solucao))
                 (format stream "~% - Fator de ramificação média: ~f" (fator-ramificacao-media solucao))
-                (format stream "~% - Duração: ~a segundo(s)" (duracao hora-inicio hora-fim))
+                (format stream "~% - Duração: ~a" tempo)
                 (format stream "~%~%~%")
             )
         )
@@ -509,4 +511,4 @@
 )
 
 
-;;(jogar)
+(jogar)
