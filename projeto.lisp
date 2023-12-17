@@ -11,8 +11,10 @@
 
 (defun jogar ()
 "Inicializa o jogo."
-    (susbtituir-f-no-ficheiro)
-    (iniciar)
+    (progn 
+        (substituir-f-no-ficheiro)
+        (iniciar)
+    )
 )
 
 (defun iniciar ()
@@ -31,7 +33,11 @@
                     (iniciar)
             ))
             (3 
-                (progn (format t "Obrigado por jogar!~%~%") (quit)
+                (progn 
+                    (format t "Obrigado por jogar!~%~%")
+                    (finish-output)
+                    (clear-output)
+                    (quit)
             ))
 
             (otherwise (progn (format t "Escolha uma opção válida!") (iniciar)))    
@@ -208,7 +214,7 @@
                             (3
                                 (let* (
                                         (heuristica (opcao-heuristica))
-                                        (resultado (list id-tabuleiro 'A* objetivo (hora-atual) (a* 'expandir-no-a* heuristica no) (hora-atual)))
+                                        (resultado (list nome 'A* objetivo (get-internal-real-time) (a* 'expandir-no-a* heuristica no) (get-internal-real-time)))
                                     )
                                     (progn
                                         (ficheiro-estatisticas resultado)
@@ -242,7 +248,7 @@
     )
 )
 
-#|
+
 (defun opcao-heuristica ()
 "Recebe um valor que corresponde a heurística escolhida pelo utilizador"
     (if (not (heuristica-menu))
@@ -266,7 +272,7 @@
         )
     )
 )
-|#
+
 
 ;; ============ FORMATAR SOLUCAO ============
 ;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim>)
@@ -397,6 +403,8 @@
             (write item :stream stream)
             (terpri stream)
         )
+        (finish-output stream)
+        (close stream)
     )
 )
 
@@ -411,7 +419,7 @@
     )
 )
 
-(defun susbtituir-f-no-ficheiro ()
+(defun substituir-f-no-ficheiro ()
 "Susbstitui o tabuleiro do problema F no ficheiro."
     (let* ((dados-ficheiro (ler-tabuleiros))
             (novo-tabuleiro (tabuleiro-aleatorio))
@@ -511,4 +519,4 @@
 )
 
 
-(jogar)
+;;(jogar)
