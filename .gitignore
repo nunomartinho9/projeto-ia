@@ -2,4 +2,5 @@
 puzzle.fasl
 procura.fasl
 projeto.fasl
-./projeto-ano-passado(remover depois)/
+projeto-ano-passado(remover depois)/
+testes.lisp

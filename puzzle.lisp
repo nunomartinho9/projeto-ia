@@ -42,10 +42,12 @@
         ((funcall pred (car lista)) (remover-se pred (cdr lista)))
         (T (cons (car lista) (remover-se pred (cdr lista))))))
 
-;; (soma-tabuleiro (tabuleiro-teste))
+;; (somar-tabuleiro (tabuleiro-teste))
 (defun somar-tabuleiro (tabuleiro)
   "Soma todos os valores do tabuleiro."
-  (reduce #'+ (mapcan #'(lambda (linha) (remove-if #'(lambda (celula) (eq celula nil)) linha)) tabuleiro)))
+  (reduce #'+ (mapcan #'(lambda (linha) (remove-if #'(lambda (celula) (or (eq celula nil) (eq celula t))) linha)) tabuleiro)))
+
+
 
 ;; (linha 0 (tabuleiro-teste))
 ;; (94 25 54 89 21 8 36 14 41 96)
@@ -123,6 +125,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 ;; (posicao-valor 15 (tabuleiro-teste))
 ;; (4 1)
 ;; melhorar isto deixar em vez do 9 trocar por n x n
+
 (defun posicao-valor (valor tabuleiro &optional (row 0) (column 0))
   "Função que recebe o tabuleiro e devolve a posição (i j) em que se encontra o (valor)."
   (cond
@@ -151,12 +154,21 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
    ((eq (car linha) nil) (contar-casas-validas (cdr linha)))
    (t (1+ (contar-casas-validas (cdr linha))))))
 
+(defun contar-casas-validas-tabuleiro (tabuleiro &optional (l 0))
+
+  (if (and (>= l 0) (<= l 9))
+      (+ (contar-casas-validas (linha l tabuleiro)) (contar-casas-validas-tabuleiro tabuleiro (1+ l)))
+      0))
+
 (defun casas-validas-posicoes (tabuleiro &optional (casas (linha 0 tabuleiro)))
 
   (mapcar #'(lambda (l)
               (posicao-valor l tabuleiro))
     (remover-se #'(lambda (x) (eq x nil)) casas)))
 
+
+(defun media-casas-pontos (tabuleiro)
+  (/ (somar-tabuleiro tabuleiro) (contar-casas-validas-tabuleiro tabuleiro)))
 
 ;;(format-tabuleiro (posicionar-cavalo (tabuleiro-teste)))
 (defun posicionar-cavalo (tabuleiro)
@@ -178,19 +190,13 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
       tabuleiro))
 
 
-
-(defun posicionar-cavalo2 (tabuleiro &optional(lin 0) (col 0))
-  (substituir lin col tabuleiro T)
-  
-  )
+(defun posicionar-cavalo2 (tabuleiro &optional (lin 0) (col 0))
+  (substituir lin col tabuleiro T))
 
 (defun tabuleiros-cavalo-inicial (tabuleiro-sem-cavalo)
   (mapcar #'(lambda (pos)
-              (posicionar-cavalo2 tabuleiro-sem-cavalo (car pos) (cadr pos))
-              ) 
-      (casas-validas-posicoes tabuleiro-sem-cavalo))
-  
-  )
+              (posicionar-cavalo2 tabuleiro-sem-cavalo (car pos) (cadr pos)))
+    (casas-validas-posicoes tabuleiro-sem-cavalo)))
 
 ;; (n-simetrico 96)
 ;; 69
@@ -247,10 +253,12 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 
 ;; calcular score de um no
 (defun calcular-pontos (pontos-atual tabuleiro-anterior tabuleiro-novo)
-  "Recebe a pontuação atual e com o tabuleiro anterior e o novo tabuleiro é devolvido a nova pontuação."
+  "Recebe a pontuação atual e, com o tabuleiro anterior e o novo tabuleiro, é devolvida a nova pontuação."
   (let* ((pos (posicao-cavalo tabuleiro-novo))
          (pontos (celula (car pos) (cadr pos) tabuleiro-anterior)))
+
     (+ pontos-atual pontos)))
+
 
 ;; ============= OPERADORES =============
 

@@ -123,7 +123,7 @@
 
 ;; (a* 'expandir-no-a* 'heuristica-base (list (no-teste)))
 ;; (((((0) (0)) ((0) (1))) (((0) (0)) ((1) (1))) (((0) (1)) ((1) (1))) (((1) (1)) ((1) (1)))) 2 5 5)
-(defun a* (fnExpandir fnHeuristica abertos &optional (fechados '()) (numeroExpandidos 0))
+(defun TESTE-A* (fnExpandir fnHeuristica abertos &optional (fechados '()) (numeroExpandidos 0))
     "Algoritmo A*" 
     (cond 
         ((= (length abertos) 0) NIL)
