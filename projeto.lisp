@@ -2,7 +2,6 @@
 ;;  escreve e lê ficheiros, e trata da interação com o utilizador
 ;;  Autores: Nuno Martinho & João Coelho.
 
-;;(bfs-recursivo (third (escolher-problema 1)) (second (escolher-problema 1)) 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial)
 ;; ============ CARREGAR FICHEIROS ============
 
 (load "procura.lisp")
@@ -10,37 +9,32 @@
 
 ;; ============= INICIAR =============
 
+(defun jogar ()
+"Inicializa o jogo."
+    (susbtituir-f-no-ficheiro)
+    (iniciar)
+)
+
 (defun iniciar ()
-"Inicializa o programa"
+"Inicializa o programa."
     (menu)
     (let ((opcao (read)))
-        (if 
-            (or (not (numberp opcao)) (< opcao 1) (> opcao 3))
-                (progn (format t "Escolha uma opção válida!") (iniciar))
-                (ecase opcao
-                    (1 (progn 
-                            (print-tabuleiros)
-                            (iniciar)
-                        )
-                    )
-                    (2 (progn
-                            (let ((resultado (opcao-algoritmo)))
-                                (progn
-                                    (format t "~%Tabuleiro ~a" (first resultado))
-                                    (format t "~%  - Algoritmo ~a" (second resultado))
-                                    (format t "~%  - Objetivo: ~a" (third resultado))
-                                    (format t "~%  - Solução:")
-                                    (if (fifth solucao)
-                                        ;;(print-tabuleiro (fifth solucao)) ALTERAR POR NOVO PRINT DO NUNITO
-                                        (format t "~%~t~t~t Solução não encontrada.~%")
-                                    )
-                                )
-                            )
-                            (iniciar)
-                        )
-                    )
-                    (3 (progn (format t "Obrigado por jogar!~%~%") (quit)))
-                )
+        (case opcao
+            (1 
+                (progn 
+                    (print-tabuleiros)
+                    (iniciar)
+            ))
+            (2
+                (progn
+                    (opcao-algoritmo)
+                    (iniciar)
+            ))
+            (3 
+                (progn (format t "Obrigado por jogar!~%~%") (quit)
+            ))
+
+            (otherwise (progn (format t "Escolha uma opção válida!") (iniciar)))    
         )
     )
 )
@@ -48,7 +42,7 @@
 ;; ============= MENUS =============
 
 (defun menu ()
-  "Mostra o menu inicial"
+  "Mostra o menu inicial."
     (progn
         ;;(format t "~%A carregar jogo...~%")
         ;;(sleep 1)
@@ -64,24 +58,27 @@
 )
 
 (defun tabuleiros-menu (&optional (i 1) (problemas (ler-tabuleiros)))
-"Mostra os tabuleiros disponíveis no menu"
+"Mostra os tabuleiros disponíveis no programa."
     (cond ((null problemas) 
             (progn
-                (format t "~%|                                |")
-                (format t "~%|        0 - Voltar atrás        |") 
-                (format t "~%o                                o")
+                (format t "~%|                                 |")
+                (format t "~%|        0 - Voltar atrás         |") 
+                (format t "~%o                                 o")
                 (format t "~%~%>> ")
             )
         )
         (T (progn
                 (if (= i 1) 
                     (progn 
-                        (format t "~%o                                o")
-                        (format t "~%|    - Escolha o tabuleiro: -    |")
-                        (format t "~%|                                |")
+                        (format t "~%o                                 o")
+                        (format t "~%|    - Escolha o tabuleiro: -     |")
+                        (format t "~%|                                 |")
                     )
                 )
-                (format t "~%|        ~a - Tabuleiro ~a         |" i (code-char (+ i 64)))
+                (if (eq i 6)
+                    (format t "~%|    ~a - Tabuleiro ~a (aleatório)  |" i (code-char (+ i 64)))
+                    (format t "~%|    ~a - Tabuleiro ~a              |" i (code-char (+ i 64)))
+                )
                 (tabuleiros-menu (+ i 1) (cdr problemas))
             )
         )
@@ -89,7 +86,7 @@
 )
 
 (defun algoritmos-menu ()
-"Mostra os algoritmos disponiveis no menu"
+"Mostra os algoritmos disponíveis no programa."
     (progn
         (format t "~%o                                    o")
         (format t "~%|      - Escolha o algoritmo -       |")
@@ -105,11 +102,15 @@
 )
 
 (defun profundidade-menu ()
-"Mostra uma mensagem para escolher a profundidade"
+"Mostra uma mensagem para escolher a profundidade."
     (progn
         (format t "~%o                                             o")
         (format t "~%|      - Defina a profundidade máxima         |")
         (format t "~%|                a utilizar -                 |")
+        (format t "~%|                                             |")
+        (format t "~%|         1 - Valor predefinido (20)          |")
+        (format t "~%|                                             |")
+        (format t "~%|          Ou introduza outro valor.          |")
         (format t "~%|                                             |")
         (format t "~%|                0 - Voltar                   |")
         (format t "~%o                                             o")
@@ -118,7 +119,7 @@
 )
 
 (defun heuristica-menu ()
-"Mostra uma mensagem para escolher a profundidade"
+"Mostra uma mensagem para escolher a heurística."
     (progn
         (format t "~%o                                                o")
         (format t "~%|       - Defina a heurística a utilizar -       |")
@@ -135,19 +136,19 @@
 ;; ============= NAVEGAÇÃO =============
 
 (defun opcao-tabuleiro (&optional (voltar 'iniciar))
-"Recebe a opção de um tabuleiro do menu"
+"Recebe a opção de um tabuleiro do menu."
     (progn 
         (tabuleiros-menu)
         (let ((opcao (read)))
-            (cond ((equal opcao '0) (funcall voltar))
-                  ((not (numberp opcao)) (progn (format t "Escolha uma opção válida~%")))
+            (cond ((equal opcao 0) (funcall voltar))
+                  ((not (numberp opcao)) (progn (format t "Escolha uma opção válida!~%")))
                   (T
                     (let ((lista (ler-tabuleiros)))
                         (if (or (< opcao 0) (> opcao (length lista)))
                             (progn 
                                 (format t "Escolha uma opção válida!") (opcao-tabuleiro 'tabuleiros-menu)
                             )
-                            opcao
+                            opcao     
                         )
                     )
                   )
@@ -156,17 +157,14 @@
     )
 )
 
-;; FUNCAO INACABADA
-;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim>)
+;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>)
 
 ;; <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade> <>)
 ;; <solucao>::= (<caminho-solucao> <n-abertos> <n-fechados>)
 ;; <solucao-a*>::= (<caminho-solucao> <n-abertos> <n-fechados> <n-nos-expandidos>)
 
-;; (bfs-recursivo (third (escolher-problema 1)) (second (escolher-problema 1)) 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial)
-
 (defun opcao-algoritmo ()
-"Recebe a opcao de algoritmo do utilizador e executa-o"
+"Recebe a opção de algoritmo do utilizador e executa-o."
     (progn
         (algoritmos-menu)
         (let ((opcao (read)))
@@ -174,38 +172,38 @@
                     ((or (< opcao 0) (> opcao 4)) (progn (format t "Escolha uma opção válida!~%") (opcao-algoritmo)))
                     ((not (numberp opcao)) (progn (format t "Escolha uma opção válida!~%")))
                     (T (let* (
-                                (id-tabuleiro (opcao-tabuleiro 'opcao-algoritmo))
+                                (id-tabuleiro (opcao-tabuleiro))
                                 (problema (escolher-problema id-tabuleiro))
                                 (nome (nome-problema problema))
                                 (tabuleiro (tabuleiro-problema problema))
                                 (objetivo (pontuacao-problema problema))
-                                (hora-inicio (hora-atual))
-                                (hora-fim (hora-atual))
                             )
                         (ecase opcao
                             (1
-                                (let* (                                    
-                                    (solucao (bfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial))
-                                    (resultado (list nome 'BFS objetivo hora-inicio solucao hora-fim)))
-                                    (progn 
-                                        resultado
-                                        ;;(ficheiro-estatisticas resultado) 
-                                    )
-                                )
-                            )
-                            #|
-                            (2
-                                (let* (
-                                        (profundidade (opcao-profundidade))
-                                        (resultado (list id-tabuleiro 'DFS objetivo (hora-atual) (dfs 'gerar-sucessores profundidade no) (hora-atual) profundidade))
+                                (let* (                                   
+                                    (resultado (list nome 'BFS objetivo (get-internal-real-time) (bfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial) (get-internal-real-time)))
                                     )
                                     (progn
-                                        (ficheiro-estatisticas resultado)
-                                        resultado
+                                        (format-solucao resultado)
+                                        (if (fifth resultado)
+                                            (ficheiro-estatisticas resultado)
+                                        )
                                     )
                                 )
                             )
-                            |#
+                            (2
+                                (let* (
+                                        (profundidade-max (opcao-profundidade))
+                                        (resultado (list nome 'DFS objetivo (get-internal-real-time) (dfs-recursivo tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial profundidade-max) (get-internal-real-time) profundidade-max))
+                                    )
+                                    (progn
+                                        (format-solucao resultado)
+                                        (if (fifth resultado)
+                                            (ficheiro-estatisticas resultado)
+                                        )
+                                    )
+                                )
+                            )
                             #|
                             (3
                                 (let* (
@@ -226,25 +224,23 @@
     )
 )
 
-
-#|
 (defun opcao-profundidade ()
-"Recebe um valor de profundidade máxima do utilizador"
+"Recebe um valor de profundidade máxima do utilizador."
     (if (not (profundidade-menu))
         (let ((opcao (read)))
-            (cond ((equal opcao '0) (opcao-objetivo))
+            (cond ((equal opcao 0) (opcao-tabuleiro))
+                  ((equal opcao 1) 20)
                   ((or (not (numberp opcao)) (< opcao 0))
                     (progn
                         (format t "Escolha uma opção válida!~%")
                         (opcao-profundidade 'profundidade-menu)
                     )
                   )
-                  (T opcao)
+                  (t opcao)
             )
         )
     )
 )
-|#
 
 #|
 (defun opcao-heuristica ()
@@ -273,10 +269,10 @@
 |#
 
 ;; ============ FORMATAR SOLUCAO ============
+;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim>)
 
 (defun format-no-solucao (no &optional (stream t))
-  
-    "Formata o tabuleiro"
+"Formata o tabuleiro."
   (not (null (mapcar #'(lambda (l)
                          (progn
                           ;;(format stream "Objetivo: ~a~tPontos: ~a~tProfundidade: ~a" (solucao-no-pontos-obj no) (solucao-no-pontos-atual no) (solucao-no-profundidade no))
@@ -287,33 +283,52 @@
   )
 
 (defun format-nos-solucao (nos &optional (stream t))
-  
-    
+"Formata o nó-solução."
   (not (null (mapcar #'(lambda (l)
                          (progn
-                          (format stream "Pontos: ~a~tProfundidade: ~a~%"(solucao-no-pontos-atual l) (solucao-no-profundidade l))
-                          (format-no-solucao l)
-                          (format stream "------------------------------------------------~%"))) nos)))
-  (format t "~%~%")
-  )
-
-(defun format-solucao (problema-id solucao &optional (stream t))
-  
-  
-  (format stream "========================================================~%")
-  (format stream "~t~t~t~tProblema: ~a~tObjetivo: ~a~%" problema-id (solucao-no-pontos-obj (no-caminho-solucao-primeiro solucao)))
-  (format stream "Uma Solução foi encontrada! Resultados abaixo!~%")
-  (format stream "========================================================~%")
-  (format-nos-solucao (reverse (solucao-nos solucao)))
-  (format stream "Restantes estatisticas guardadas no ficheiro resultados.dat~%")
-  (format stream "~%")
+                          (format stream "~%Pontos: ~a~tProfundidade: ~a~%"(solucao-no-pontos-atual l) (solucao-no-profundidade l))
+                          (format stream "------------------------------------------------~%")
+                          (format-no-solucao l stream)
+                          )) nos)))
+  (format t "~%")
 )
 
-;; ============= INPUT/OUTPUT =============
+(defun format-solucao (resultado &optional (stream t))
+"Formatar a solução completa."
+  (let* (
+        (problema-id (first resultado))
+        (algoritmo (second resultado))
+        (objetivo (third resultado))
+        (solucao (fifth resultado))
+        (profundidade-max (seventh resultado))
+    )
+    (format stream "====================================================~%")
+    (format stream "~tProblema ~a~t~tObjetivo: ~a pontos~%" problema-id objetivo)
+    (format stream "~tAlgoritmo ~a~%" algoritmo)
+    (if profundidade-max
+        (format stream "~tProfundidade máxima: ~a~%" profundidade-max)
+    )
+    (if solucao
+        (progn
+            (format stream "~%~tUma solução foi encontrada!~%")
+            (format stream "===================================================~%")
+            (format-nos-solucao (reverse (solucao-nos solucao)))
+            (format stream "===========================================================~%")
+            (format stream "Restantes estatísticas guardadas no ficheiro resultados.dat~%")
+            (format stream "===========================================================~%")
+        )
+        (progn
+            (format stream "~%~tNão foi encontrada uma solução!~%")
+            (format stream "========================================================~%"))
+    )
+  )
+)
+
+;;; ============= INPUT/OUTPUT =============
 
 ;; (ler-tabuleiros)
 (defun ler-tabuleiros ()
-"Lê os tabuleiros no ficheiro problemas.dat"
+"Lê os tabuleiros no ficheiro problemas.dat."
     (with-open-file (stream "problemas.dat" :if-does-not-exist nil)
         (do ((result nil (cons next result))
                 (next (read stream nil 'eof) (read stream nil 'eof)))
@@ -328,20 +343,23 @@
 )
 
 (defun tabuleiro-problema (problema)
+"Devolve o tabuleiro do problema."
     (third problema)
 )
 
 (defun pontuacao-problema (problema)
+"Devolve a pontuação/objetivo do problema."
     (second problema)
 )
 
 (defun nome-problema (problema)
+"Devolve a letra do problema."
     (string-upcase (first problema))
 )
 
 ;; (print-tabuleiro (ler-tabuleiros))
 (defun print-tabuleiro (indice &optional (stream t))
-"Imprime um tabuleiro do ficheiro problemas.dat, indice comeca no 1"
+"Imprime um tabuleiro do ficheiro problemas.dat (índice começa no 1)."
     (if (<= indice 0) nil      
         (let ((tabuleiroEscolhido (escolher-problema indice)))
             (progn
@@ -357,6 +375,7 @@
 
 ;; (print-tabuleiros (ler-tabuleiros))
 (defun print-tabuleiros (&optional (ln 1))
+"Imprime todos os tabuleiros no ficheiro problemas.dat."
     (cond
         ((> ln (length (ler-tabuleiros))) (format T "------------------------------------~%") )
         (t 
@@ -369,60 +388,127 @@
     )
 )
 
-;; ============= ESTATISTICAS =============
+;; ============= TABULEIRO F =============
 
-;; <solucao>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <caminho-solucao> <profundidade> <hora-fim>)
-#|
-;;(ficheiro-estatisticas '("solucao" "A" "BFS" (hora-atual) (hora-atual)))
-(defun ficheiro-estatisticas (solucao)
-"Ficheiro de resultados estatisticos (solucao + dados estatisticos sobre a eficiencia)"
-    (let* (
-            (id-tabuleiro (first solucao))
-            (algoritmo (second solucao))
-            (objetivo (third solucao))
-            (hora-inicio (fourth solucao))
-            (caminho-solucao (fifth solucao))
-            (hora-fim (sixth solucao))
-            (profundidade (seventh solucao))
-           )
+(defun escrever-no-ficheiro (dados caminho-ficheiro)
+"Escrever no ficheiro passado como parâmetro."
+    (with-open-file (stream caminho-ficheiro :direction :output :if-exists :supersede)
+        (dolist (item dados)
+            (write item :stream stream)
+            (terpri stream)
+        )
+    )
+)
 
-        (with-open-file (file "resultados.dat" :direction :output :if-does-not-exist :create :if-exists :append)
-            (ecase algoritmo
-                ('bfs (estatisticas file id-tabuleiro algoritmo objetivo caminho-solucao hora-inicio hora-fim))
-                ('dfs (estatisticas file id-tabuleiro algoritmo objetivo caminho-solucao hora-inicio hora-fim profundidade))
-                ('a* (estatisticas file id-tabuleiro algoritmo objetivo caminho-solucao hora-inicio hora-fim))
+(defun substituir-tabuleiro-f (dados novo-tabuleiro)
+"Substitui o tabuleiro do problema F."
+  (let ((dados-atualizados (mapcar (lambda (item)
+                                (if (and (listp item) (string= "f" (car item)))
+                                    (list (car item) (cadr item) novo-tabuleiro)
+                                    item)
+                                ) dados)
+        )) dados-atualizados
+    )
+)
+
+(defun susbtituir-f-no-ficheiro ()
+"Susbstitui o tabuleiro do problema F no ficheiro."
+    (let* ((dados-ficheiro (ler-tabuleiros))
+            (novo-tabuleiro (tabuleiro-aleatorio))
+        )
+        (when dados-ficheiro
+            (let ((dados-atualizados (substituir-tabuleiro-f dados-ficheiro novo-tabuleiro)))
+                (if dados-atualizados
+                    (escrever-no-ficheiro dados-atualizados "problemas.dat")
+                    (format t "Tabuleiro F não gerado!")
+                )
             )
         )
     )
 )
-|#
-(defun hora-atual ()
-"Retorna a hora atual (hh mm ss)"
-    (multiple-value-bind (s m h)
-            (get-decoded-time)
-        (format nil "~a:~a:~a" h m s))
-)
+
 #|
-(defun estatisticas (stream id-tabuleiro algoritmo objetivo caminho-solucao hora-inicio hora-fim &optional profundidade)
-"Solução e dados de eficiência para os algoritmos"
-    (progn
-        (format stream "~%Tabuleiro ~a" id-tabuleiro)
-        (format stream "~% - Algoritmo: ~a" algoritmo)
-        (format stream "~% - Objetivo: ~a caixas" objetivo)
-        (format stream "~% - Solucao encontrada")
-        (print-tabuleiro (no-solucao caminho-solucao) stream)
-        (format stream "~% - Fator de ramificacao media: ~f" (fator-ramificacao-media caminho-solucao))
-        (if (eql algoritmo 'DFS)
-            (format stream "~% - Profundidade maxima: ~a" profundidade)
+(defun substituir-valor-lista (lista indice novo-valor)
+"Susbtitui um valor numa lista."
+    (if (and (listp lista) (>= (length lista) (1+ indice)))
+        (let ((antes (subseq lista 0 indice))
+                (depois (subseq lista (1+ indice)))
+            )
+            (append antes (list novo-valor) depois)
         )
-        (format stream "~% - Nº nos gerados: ~a" (num-nos-gerados caminho-solucao))
-        (if (eql algoritmo 'A*)
-            (format stream "~% - Nº nos expandidos: ~a" (num-nos-expandidos-a* caminho-solucao))
-            (format stream "~% - Nº nos expandidos: ~a" (num-nos-expandidos caminho-solucao))
-        )
-        (format stream "~% - Penetrancia: ~f" (penetrancia caminho-solucao))
-        (format stream "~% - Inicio: ~a" hora-inicio)
-        (format stream "~% - Fim: ~a~%~%" hora-fim)
+      (format t "O índice do elemento não consta na lista."))
+)
+
+(defun substituir-lista-ordenada (dados indice-lista nova-lista)
+    (if (and (listp dados) (>= (length dados) (1+ indice-lista)))
+        (let ((antes (subseq dados 0 indice-lista))
+                (depois (subseq dados (1+ indice-lista))))
+            (append antes (list nova-lista) depois))
+        (format t "O índice da lista está fora dos valores esperados.")
     )
 )
 |#
+
+
+;; ============= ESTATISTICAS =============
+
+;;(ficheiro-estatisticas '(<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>))
+(defun ficheiro-estatisticas (resultado)
+"Ficheiro de resultados estatísticos (solução + dados estatísticos sobre a eficiência)."
+    (with-open-file (stream "resultados.dat" :direction :output :if-does-not-exist :create :if-exists :append)
+        (estatisticas stream resultado)
+    )
+)
+
+(defun duracao (hora-inicio hora-fim)
+"Calcula a diferença entre dois valores temporais."
+    (let* ((diferenca (- hora-fim hora-inicio))
+        (milisegundos (/ diferenca 1000))
+        (segundos (floor (/ milisegundos 1000)))
+        (ms (mod (round milisegundos) 1000)))
+        
+        (format nil "~2,'0Ds ~3,'0,'0Dms" segundos ms)    
+    )
+)
+
+(defun estatisticas (stream resultado)
+"Solução e dados de eficiência para os algoritmos."
+    (let* (
+            (problema-id (first resultado))
+            (algoritmo (second resultado))
+            (objetivo (third resultado))
+            (hora-inicio (fourth resultado))
+            (solucao (fifth resultado))
+            (hora-fim (sixth resultado))
+            (profundidade (seventh resultado))
+            (tempo (duracao hora-inicio hora-fim))
+           )
+    (progn
+        (format stream "~%Tabuleiro ~a" problema-id)
+        (format stream "~% - Algoritmo: ~a" algoritmo)
+        (format stream "~% - Objetivo: ~a pontos" objetivo)
+        (if (eql algoritmo 'DFS)
+            (format stream "~% - Profundidade máxima: ~a" profundidade)
+        )
+        (if solucao 
+            (progn
+                (format stream "~% - Solução encontrada ~%")
+                (format-nos-solucao (reverse (solucao-nos solucao)) stream)
+                (format stream "~% - Pontos: ~a" (solucao-no-pontos-atual (no-caminho-solucao-primeiro solucao)))
+                (format stream "~% - Profundidade: ~a" (solucao-no-profundidade (no-caminho-solucao-primeiro solucao)))
+                (format stream "~% - Nº nós gerados: ~a" (num-nos-gerados solucao))
+                (if (eql algoritmo 'A*)
+                    (format stream "~% - Nº nós expandidos: ~a" (num-nos-expandidos-a* solucao))
+                    (format stream "~% - Nº nós expandidos: ~a" (solucao-fechados solucao))
+                )
+                (format stream "~% - Penetrância: ~f" (penetrancia solucao))
+                (format stream "~% - Fator de ramificação média: ~f" (fator-ramificacao-media solucao))
+                (format stream "~% - Duração: ~a" tempo)
+                (format stream "~%~%~%")
+            )
+        )
+    ))
+)
+
+
+(jogar)
