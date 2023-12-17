@@ -9,10 +9,15 @@
 
 ;; ============= INICIAR =============
 
+(defun jogar ()
+"Inicializa o jogo."
+    (susbtituir-f-no-ficheiro)
+    (iniciar)
+)
+
 (defun iniciar ()
 "Inicializa o programa."
     (menu)
-    (susbtituir-f-no-ficheiro)
     (let ((opcao (read)))
         (case opcao
             (1 
@@ -499,4 +504,4 @@
 )
 
 
-;;(iniciar)
+;;(jogar)
