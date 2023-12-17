@@ -210,19 +210,19 @@
                                     )
                                 )
                             )
-                            #|
                             (3
                                 (let* (
                                         (heuristica (opcao-heuristica))
-                                        (resultado (list nome 'A* objetivo (get-internal-real-time) (a* 'expandir-no-a* heuristica no) (get-internal-real-time)))
+                                        (resultado (list nome 'A* objetivo (get-internal-real-time) (a* tabuleiro objetivo 'usar-operadores 'calcular-pontos 'posicao-cavalo 'tabuleiros-cavalo-inicial heuristica) (get-internal-real-time) heuristica))
                                     )
                                     (progn
-                                        (ficheiro-estatisticas resultado)
-                                        resultado
+                                        (format-solucao resultado)
+                                        (if (fifth resultado)
+                                            (ficheiro-estatisticas resultado)
+                                        )
                                     )
                                 )
                             )
-                            |#
                         )
                     ))
             )
@@ -253,7 +253,7 @@
 "Recebe um valor que corresponde a heurística escolhida pelo utilizador"
     (if (not (heuristica-menu))
         (let ((opcao (read)))
-            (cond ((equal opcao '0) (opcao-objetivo))
+            (cond ((equal opcao '0) (opcao-tabuleiro))
                   ((or (not (numberp opcao)) (< opcao 0) (> opcao 2))
                     (progn
                         (format t "Escolha uma opção válida!~%")
@@ -306,13 +306,15 @@
         (algoritmo (second resultado))
         (objetivo (third resultado))
         (solucao (fifth resultado))
-        (profundidade-max (seventh resultado))
+        (opcional (seventh resultado))
     )
     (format stream "====================================================~%")
     (format stream "~tProblema ~a~t~tObjetivo: ~a pontos~%" problema-id objetivo)
     (format stream "~tAlgoritmo ~a~%" algoritmo)
-    (if profundidade-max
-        (format stream "~tProfundidade máxima: ~a~%" profundidade-max)
+    (if opcional
+        (cond ((eq algoritmo 'DFS) (format stream "~tProfundidade máxima: ~a~%" opcional))
+              ((eq algoritmo 'A*) (format stream "~tHeurística: ~a~%" opcional)))
+        
     )
     (if solucao
         (progn
@@ -488,15 +490,16 @@
             (hora-inicio (fourth resultado))
             (solucao (fifth resultado))
             (hora-fim (sixth resultado))
-            (profundidade (seventh resultado))
+            (opcional (seventh resultado))
             (tempo (duracao hora-inicio hora-fim))
            )
     (progn
         (format stream "~%Tabuleiro ~a" problema-id)
         (format stream "~% - Algoritmo: ~a" algoritmo)
         (format stream "~% - Objetivo: ~a pontos" objetivo)
-        (if (eql algoritmo 'DFS)
-            (format stream "~% - Profundidade máxima: ~a" profundidade)
+        (cond ((eql algoritmo 'DFS)
+                (format stream "~% - Profundidade máxima: ~a" opcional))
+            ((eql algoritmo 'A*) (format stream "~% - Heurística: ~a" opcional))
         )
         (if solucao 
             (progn
