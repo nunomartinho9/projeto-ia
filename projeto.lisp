@@ -136,7 +136,7 @@
         (format t "~%|       - Defina a heuristica a utilizar -       |")
         (format t "~%|                                                |")
         (format t "~%|           1 - Heuristica Enunciado             |")
-        (format t "~%|         2 - Heuristica Personalizada           |")
+        ;(format t "~%|         2 - Heuristica Personalizada           |")
         (format t "~%|                                                |")
         (format t "~%|                  0 - Voltar                    |")
         (format t "~%o                                                o")
@@ -269,9 +269,11 @@
                         (1
                             'heuristica-base
                         )
+#|
                         (2
                             'heuristica-top
                         )
+|#
                   ))
             )
         )
@@ -457,12 +459,12 @@
 
 (defun duracao (hora-inicio hora-fim)
 "Calcula a diferenca entre dois valores temporais."
-    (let* ((diferenca (- hora-fim hora-inicio))
-        (milisegundos (/ diferenca 1000))
-        (segundos (floor (/ milisegundos 1000)))
-        (ms (mod (round milisegundos) 1000)))
-        
-        (format nil "~2,'0Ds ~3,'0,'0Dms" segundos ms)    
+; 1 segundo = 1000 milissegundos = 1000000 microsegundos
+    (let* (
+           (diferenca (- hora-fim hora-inicio))
+           (segundos (float (/ diferenca 1000)))
+        )
+        (format nil "~ds" segundos)
     )
 )
 
@@ -506,5 +508,3 @@
     ))
 )
 
-
-(jogar)
