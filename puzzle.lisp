@@ -48,7 +48,6 @@
   (reduce #'+ (mapcan #'(lambda (linha) (remove-if #'(lambda (celula) (or (eq celula nil) (eq celula t))) linha)) tabuleiro)))
 
 
-
 ;; (linha 0 (tabuleiro-teste))
 ;; (94 25 54 89 21 8 36 14 41 96)
 (defun linha (index tabuleiro)
@@ -168,7 +167,10 @@ funcao devera retornar o tabuleiro com a celula substituída pelo valor pretendi
 
 
 (defun media-casas-pontos (tabuleiro)
-  (/ (somar-tabuleiro tabuleiro) (contar-casas-validas-tabuleiro tabuleiro)))
+  (let ((media (/ (somar-tabuleiro tabuleiro) (contar-casas-validas-tabuleiro tabuleiro))))
+    (if (= media 0)
+        1
+        media)))
 
 ;;(format-tabuleiro (posicionar-cavalo (tabuleiro-teste)))
 (defun posicionar-cavalo (tabuleiro)

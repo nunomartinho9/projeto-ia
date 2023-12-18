@@ -190,14 +190,6 @@
   )
 
 
-
-
-
-
-
-
-
-
 #|Exemplo de uso:
 (let ((resultado (bfs-iterativo (tabuleiro-jogado) 100 'usar-operadores 'calcular-pontos 'posicionar-cavalo)))
   (if resultado
