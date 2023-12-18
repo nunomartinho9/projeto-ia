@@ -202,16 +202,16 @@
 (let ((resultado (bfs-iterativo (tabuleiro-jogado) 100 'usar-operadores 'calcular-pontos 'posicionar-cavalo)))
   (if resultado
       (print resultado)
-      (print "Sem solução")))|#
+      (print "Sem solucao")))|#
 (defun verificar-solucao (no-atual)
-  "Função que recebe o no atual e verifica se este é um nó solução. 
-  Se a pontuação for maior ou igual que a pontuação desejada é devolvido T, caso contrário NIL."
+  "Funcao que recebe o no atual e verifica se este e um no solucao. 
+  Se a pontuacao for maior ou igual que a pontuacao desejada e devolvido T, caso contrario NIL."
   (cond
    ((>= (no-pontos-atual no-atual) (no-pontos-final no-atual)) T)
    (t NIL)))
 
 (defun algum-objetivo-p (sucessores)
-  "Verifica se algum dos sucessores é um nó objetivo."
+  "Verifica se algum dos sucessores e um no objetivo."
   (some #'(lambda (sucessor) (verificar-solucao sucessor)) sucessores))
 
 (defun caminho-solucao (no)
@@ -228,7 +228,7 @@
             (caminho-solucao (no-pai no)))))
 
 (defun caminho-solucao-a* (no)
-  "Devolve uma lista de nós do nó inicial até ao nó da solução para A*."
+  "Devolve uma lista de nos do no inicial ate ao no da solucao para A*."
   (if (null (no-pai no))
       (list no)
       (cons no (caminho-solucao-a* (no-pai no)))))
@@ -236,9 +236,9 @@
 ;; ============= HEURISTICAS E AVALIACAO =============
 
 (defun heuristica-base (no &optional (fn-calcular-m 'media-casas-pontos))
-  "h(x) = o(x)/m(x) : uma heurística que privilegia visitar as casas com o maior número de pontos.
-  m(x) é a média por casa dos pontos que constam no tabuleiro x,
-  o(x) é o número de pontos que faltam para atingir o valor definido como objetivo."
+  "h(x) = o(x)/m(x) : uma heuristica que privilegia visitar as casas com o maior numero de pontos.
+  m(x) e a media por casa dos pontos que constam no tabuleiro x,
+  o(x) e o numero de pontos que faltam para atingir o valor definido como objetivo."
 
   (let ((o (- (no-pontos-final no) (no-pontos-atual no)))
         (m (funcall fn-calcular-m (no-tabuleiro no)))
@@ -253,7 +253,7 @@
   (+ (no-profundidade no) (no-h no)))
 
 (defun ordenar-por-f (lista-nos)
-  "Ordena uma lista de nós por ordem crescente do valor de f."
+  "Ordena uma lista de nos por ordem crescente do valor de f."
   (sort lista-nos #'(lambda (no1 no2) (< (no-f no1) (no-f no2)))))
 ;; ============= NOS =============
 
@@ -278,11 +278,11 @@
 
 
 (defun criar-no (tabuleiro &optional (pai nil) (pontos-obj 0) (pontos-atual 0) (profundidade 0) (h 0) (f 0))
-  "Recebe um tabuleiro, e apartir dele cria um nó com a estrutura definida."
+  "Recebe um tabuleiro, e apartir dele cria um no com a estrutura definida."
   (list tabuleiro pai pontos-obj pontos-atual profundidade h f))
 
 (defun criar-no-inicial (tabuleiro pontos-objetivo)
-  "Recebe o tabuleiro inicial e os pontos objetivo e cria o primeiro nó."
+  "Recebe o tabuleiro inicial e os pontos objetivo e cria o primeiro no."
   (criar-no tabuleiro nil pontos-objetivo 0 0 0 0))
 
 (defun criar-no-inicial-a* (tabuleiro pontos-objetivo pontos-atual g h f)
@@ -308,9 +308,9 @@
 
 ;; (gerar-sucessores (no-teste) 'usar-operadores 'calcular-pontos)
 (defun gerar-sucessores (no-atual fn-expandir-no fn-calcular-pontos)
-  "Recebe um no e a função de expansão de nos, 
-  (a função passada normalmente vai ser a usar-operadores que irá gerar uma lista das próximas jogadas)
-  depois essa lista de tabuleiros será convertida para uma lista de nós."
+  "Recebe um no e a funcao de expansão de nos, 
+  (a funcao passada normalmente vai ser a usar-operadores que ira gerar uma lista das proximas jogadas)
+  depois essa lista de tabuleiros sera convertida para uma lista de nos."
   (mapcar #'(lambda (tab)
               (criar-no tab no-atual (no-pontos-final no-atual)
                         (funcall fn-calcular-pontos (no-pontos-atual no-atual) (no-tabuleiro no-atual) tab)
@@ -343,23 +343,23 @@
 
 ;; NO
 (defun no-tabuleiro (no)
-  "retorna o tabuleiro do nó"
+  "retorna o tabuleiro do no"
   (first no))
 
 (defun no-pai (no)
-  "retorna o nó pai do nó recebido"
+  "retorna o nó pai do no recebido"
   (second no))
 
 (defun no-pontos-final (no)
-  "retorna os pontos objetivo do nó"
+  "retorna os pontos objetivo do no"
   (third no))
 
 (defun no-pontos-atual (no)
-  "retorna a pontuação atual"
+  "retorna a pontuacao atual"
   (fourth no))
 
 (defun no-profundidade (no)
-  "retona a profundidade atual do nó"
+  "retona a profundidade atual do no"
   (fifth no))
 
 (defun no-h (no)
@@ -368,13 +368,13 @@
 
 ;; Adicione o seguinte seletor para obter o valor de f de um nó
 (defun no-f (no)
-  "Retorna o valor de f de um nó."
+  "Retorna o valor de f de um no."
   (seventh no))
 
 
 ;; SOLUCAO
 (defun solucao-nos (solucao)
-  "Buscar o caminho-solucao (lista de nos desde o inicial até ao no-solucao)"
+  "Buscar o caminho-solucao (lista de nos desde o inicial ate ao no-solucao)"
   (first solucao))
 
 (defun solucao-abertos (solucao)
@@ -387,7 +387,7 @@
 
 ;; CAMINHO SOLUCAO
 (defun no-caminho-solucao (index solucao)
-  "Retorna um dos nós do caminho-solução no index recebido (começa no 0)."
+  "Retorna um dos nos do caminho-solucao no index recebido (começa no 0)."
   (if (and (>= index 0) (< index (tamanho-solucao solucao)))
       (nth index (solucao-nos solucao))
       NIL))
@@ -404,15 +404,15 @@
 ;;(solucao-no-tabuleiro (no-caminho-solucao-primeiro solucao-inteira))
 
 (defun solucao-no-pontos-obj (solucao-no)
-  "retorna os pontos objetivo do nó (da nova estrutura de nos que está no caminho-solucao)"
+  "retorna os pontos objetivo do no (da nova estrutura de nos que esta no caminho-solucao)"
   (second solucao-no))
 
 (defun solucao-no-pontos-atual (solucao-no)
-  "retorna a pontuação atual "
+  "retorna a pontuacao atual "
   (third solucao-no))
 
 (defun solucao-no-profundidade (solucao-no)
-  "retona a profundidade atual do nó (da nova estrutura de nos que está no caminho-solucao)"
+  "retona a profundidade atual do no (da nova estrutura de nos que esta no caminho-solucao)"
   (fourth solucao-no))
 
 (defun tamanho-solucao (solucao)

@@ -21,7 +21,7 @@
     (33 70 84 40 66 38 92 67 98 97)))
 
 (defun tabuleiro-jogado ()
-  "Tabuleiro de teste igual ao anterior mas tendo sido colocado o cavalo na posi��o: i=0 e j=0"
+  "Tabuleiro de teste igual ao anterior mas tendo sido colocado o cavalo na posicao: i=0 e j=0"
   '((NIL 25 54 89 T 8 36 14 41 96)
     (78 47 56 23 5 49 13 12 26 60)
     (0 27 17 83 34 93 74 52 45 80)
@@ -71,8 +71,8 @@ tabuleiro"
  21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0)
 |#
 (defun lista-numeros (&optional (n 100))
-  "Função que recebe um número positivo n e cria uma lista com todos os números
-entre 0 (inclusivé) e o número passado como argumento (exclusivé). Por default o n é 100."
+  "Funcao que recebe um número positivo n e cria uma lista com todos os numeros
+entre 0 (inclusive) e o número passado como argumento (exclusive). Por default o n é 100."
   (cond
    ((= n 1) (cons '0 '()))
    (t (cons (1- n) (lista-numeros (1- n))))))
@@ -86,7 +86,7 @@ entre 0 (inclusivé) e o número passado como argumento (exclusivé). Por defaul
  50 87 77 59 68 66 16 29 92 23 88 47 13 11 38 43 10 98 48)
 |#
 (defun baralhar (lista)
-  "Função que recebe uma lista e irá mudar aleatoriamente os seus números"
+  "Funcao que recebe uma lista e ira mudar aleatoriamente os seus numeros"
   (cond
    ((null lista) lista)
    (t
@@ -95,7 +95,7 @@ entre 0 (inclusivé) e o número passado como argumento (exclusivé). Por defaul
 
 ;; (tabuleiro-aleatorio)
 (defun tabuleiro-aleatorio (&optional (lista (baralhar (lista-numeros))) (n 10))
-  "Função que gera um tabuleiro n x n (10 x 10 valor default)"
+  "Funcao que gera um tabuleiro n x n (10 x 10 valor default)"
   (cond
    ((null lista) nil)
    (t (cons (subseq lista 0 n) (tabuleiro-aleatorio (subseq lista n) n)))))
@@ -105,8 +105,8 @@ entre 0 (inclusivé) e o número passado como argumento (exclusivé). Por defaul
 ;; (substituir-posicao 0 (linha 0 (tabuleiro-teste)) T)
 ;; (T 25 54 89 21 8 36 14 41 96)
 (defun substituir-posicao (index lista &optional (val NIL))
-  "Função que recebe um índice, uma lista e um valor (por default o valor é NIL) e
-substitui pelo valor pretendido nessa posição"
+  "Funcao que recebe um indice, uma lista e um valor (por default o valor e NIL) e
+substitui pelo valor pretendido nessa posicao"
   (cond
    ((null lista) '())
    ((= index 0) (cons val (cdr lista)))
@@ -114,8 +114,8 @@ substitui pelo valor pretendido nessa posição"
 
 ;;  (substituir 0 0 (tabuleiro-teste) T)
 (defun substituir (lin col tabuleiro &optional (val NIL))
-  "Função que recebe dois índices, o tabuleiro e um valor (por default o valor é NIL). A
-função deverá retornar o tabuleiro com a célula substituída pelo valor pretendido"
+  "Funcao que recebe dois indices, o tabuleiro e um valor (por default o valor e NIL). A
+funcao devera retornar o tabuleiro com a celula substituída pelo valor pretendido"
   (cond
    ((null tabuleiro) '())
    ((or (eq nil lin) (eq nil col)) tabuleiro);; ver isto depois
@@ -127,7 +127,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 ;; melhorar isto deixar em vez do 9 trocar por n x n
 
 (defun posicao-valor (valor tabuleiro &optional (row 0) (column 0))
-  "Função que recebe o tabuleiro e devolve a posição (i j) em que se encontra o (valor)."
+  "Funcao que recebe o tabuleiro e devolve a posicao (i j) em que se encontra o (valor)."
   (cond
    ((null tabuleiro) nil)
    ((eq valor (celula row column tabuleiro)) (list row column))
@@ -141,14 +141,14 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 ;; (0 0)
 
 (defun posicao-cavalo (tabuleiro)
-  "Função que recebe o tabuleiro e devolve a posição (i j) em que se encontra o cavalo."
+  "Funcao que recebe o tabuleiro e devolve a posicao (i j) em que se encontra o cavalo."
   (posicao-valor T tabuleiro))
 
 
 ;;(contar-casas-validas (linha 0 (tabuleiro-teste)))
 ;;10
 (defun contar-casas-validas (linha)
-  "Função que conta casas válidas em que o jogador pode jogar"
+  "Funcao que conta casas validas em que o jogador pode jogar"
   (cond
    ((null linha) 0)
    ((eq (car linha) nil) (contar-casas-validas (cdr linha)))
@@ -172,7 +172,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 
 ;;(format-tabuleiro (posicionar-cavalo (tabuleiro-teste)))
 (defun posicionar-cavalo (tabuleiro)
-  "Posicionar o cavalo (T) na primeira linha e numa coluna aleatoria válida
+  "Posicionar o cavalo (T) na primeira linha e numa coluna aleatoria valida
     (devolve o tabuleiro com o cavalo posicionado.)"
   (if (eq nil (posicao-cavalo tabuleiro))
 
@@ -201,7 +201,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 ;; (n-simetrico 96)
 ;; 69
 (defun n-simetrico (num &optional (sim 0))
-  "Transforma o número passado por argumento (num) para o seu simetrico."
+  "Transforma o numero passado por argumento (num) para o seu simetrico."
   (cond
    ((= num 0) sim)
    (t
@@ -210,7 +210,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 ;; (posicao-simetrico 96 (tabuleiro-teste))
 ;;(3 0)
 (defun posicao-simetrico (num tabuleiro)
-  "Função que recebe o tabuleiro e um numero e devolve a posição (i j) em 
+  "Funcao que recebe o tabuleiro e um numero e devolve a posicao (i j) em 
     que se encontra o numero simetrico de (num)"
   (posicao-valor (n-simetrico num) tabuleiro))
 
@@ -223,7 +223,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
  (3 61 58 44 65 82 19 4 35 62) (33 70 84 40 66 38 92 67 98 97))
 |#
 (defun eliminar-simetrico (num tabuleiro)
-  "Função que elimina o simetrico de (num) no tabuleiro"
+  "Funcao que elimina o simetrico de (num) no tabuleiro"
   (let ((coordenadas-sim (posicao-simetrico num tabuleiro)))
     (substituir (car coordenadas-sim) (cadr coordenadas-sim) tabuleiro)))
 
@@ -232,7 +232,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 ;; (duplop 15)
 ;; NIL
 (defun duplop (num &optional (max 99))
-  "Função que verifica se o numero passado como argumento é duplo"
+  "Funcao que verifica se o numero passado como argumento e duplo"
   (cond
    ((> num max) nil)
    ((= 0 (rem num 11)) t)
@@ -245,7 +245,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 ;; (posicao-duplos (tabuleiro-teste))
 ;; ((4 5) (4 2) (9 0) (8 3) (3 4) (9 4) (3 2) (6 9) (6 0))
 (defun posicao-duplos (tabuleiro)
-  "Função que devolve uma lista com as posicoes dos numeros duplos"
+  "Funcao que devolve uma lista com as posicoes dos numeros duplos"
   (remover-se #'(lambda (x) (eq x nil))
               (mapcar #'(lambda (dp)
                           (posicao-valor dp tabuleiro)) (lista-duplos))))
@@ -253,7 +253,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 
 ;; calcular score de um no
 (defun calcular-pontos (pontos-atual tabuleiro-anterior tabuleiro-novo)
-  "Recebe a pontuação atual e, com o tabuleiro anterior e o novo tabuleiro, é devolvida a nova pontuação."
+  "Recebe a pontuacao atual e, com o tabuleiro anterior e o novo tabuleiro, e devolvida a nova pontuacao."
   (let* ((pos (posicao-cavalo tabuleiro-novo))
          (pontos (celula (car pos) (cadr pos) tabuleiro-anterior)))
 
@@ -263,7 +263,7 @@ função deverá retornar o tabuleiro com a célula substituída pelo valor pret
 ;; ============= OPERADORES =============
 
 (defun mover-cavalo (tabuleiro &optional (valLinha 0) (valColuna 0))
-  "Função auxiliar para os operadores."
+  "Funcao auxiliar para os operadores."
   (let* ((tabuleiroComCavalo tabuleiro)
          (lin (car (posicao-cavalo tabuleiroComCavalo)))
          (col (cadr (posicao-cavalo tabuleiroComCavalo)))

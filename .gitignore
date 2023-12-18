@@ -1,7 +1,6 @@
 .vscode/
-puzzle.fasl
-procura.fasl
-projeto.fasl
+*.fasl
+*.64ofasl
 projeto-ano-passado(remover depois)/
 testes.lisp
 resultados.dat
