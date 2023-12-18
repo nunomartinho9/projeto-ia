@@ -1,4 +1,4 @@
-;;  Autores: Nuno Martinho e Joao Coelho e João Barbosa.
+;;  Autores: Nuno Martinho e Joao Coelho e João Barbosa.*
 
 ;; ============= ESTRUTURAS =============
 ;; <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade> <h> <f>)
@@ -86,7 +86,7 @@
                                                      (abertos-com-novos-fechados (append novos-abertos (remover-duplicados sucessores novos-abertos) fechados-para-abrir)) ;;junta em abertos, os sucessores que nao estao em abertos nem fechados, e os novos fechados para abertos
              )
 
-        (if (verificar-solucao no-atual) ;; verifica se � no solucao
+        (if (verificar-solucao no-atual) ;; verifica se � no solucao
             (list (caminho-solucao no-atual) (length abertos) (length fechados)) ;; da a solucao
             (a*-aux abertos-com-novos-fechados (remover-duplicados novos-fechados fechados-para-abrir) expandir-nos fn-calcular-pontos fn-heuristica) ;; continua
             ))))
