@@ -3,7 +3,7 @@
 ;; problema concreto, incluindo a definicao
 ;; dos operadores e heuristicas, especificos do dominio de aplicacao;
 
-;;;; Autor: Nuno Martinho e Joao Coelho
+;;  Autores: Nuno Martinho e Joao Coelho e João Barbosa.
 
 ;; ============= TABULEIROS =============
 
@@ -37,7 +37,7 @@
 
 ;;(remover-se #'(lambda (x) (= x 0)) '(1 2 0 2 0 4)) -> (1 2 2 4)
 (defun remover-se (pred lista)
-  "Reconstrói uma lista sem os elementos que verificam o predicado passado como argumento."
+  "Reconstroi uma lista sem os elementos que verificam o predicado passado como argumento."
   (cond ((null lista) NIL)
         ((funcall pred (car lista)) (remover-se pred (cdr lista)))
         (T (cons (car lista) (remover-se pred (cdr lista))))))
@@ -51,14 +51,14 @@
 ;; (linha 0 (tabuleiro-teste))
 ;; (94 25 54 89 21 8 36 14 41 96)
 (defun linha (index tabuleiro)
-  "Função que recebe um índice e o tabuleiro e retorna uma lista que representa essa linha do 
+  "Funcao que recebe um indice e o tabuleiro e retorna uma lista que representa essa linha do 
 tabuleiro"
   (nth index tabuleiro))
 
 ;;  (celula 0 1 (tabuleiro-teste))
 ;; 25
 (defun celula (lin col tabuleiro)
-  "Função que recebe dois índices e o tabuleiro e retorna o valor presente nessa célula do
+  "Funcao que recebe dois indices e o tabuleiro e retorna o valor presente nessa celula do
 tabuleiro"
   (if (or (< lin 0) (< col 0)) NIL (linha col (linha lin tabuleiro))))
 
@@ -70,8 +70,8 @@ tabuleiro"
  21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0)
 |#
 (defun lista-numeros (&optional (n 100))
-  "Funcao que recebe um número positivo n e cria uma lista com todos os numeros
-entre 0 (inclusive) e o número passado como argumento (exclusive). Por default o n é 100."
+  "Funcao que recebe um numero positivo n e cria uma lista com todos os numeros
+entre 0 (inclusive) e o numero passado como argumento (exclusive). Por default o n é 100."
   (cond
    ((= n 1) (cons '0 '()))
    (t (cons (1- n) (lista-numeros (1- n))))))
@@ -114,7 +114,7 @@ substitui pelo valor pretendido nessa posicao"
 ;;  (substituir 0 0 (tabuleiro-teste) T)
 (defun substituir (lin col tabuleiro &optional (val NIL))
   "Funcao que recebe dois indices, o tabuleiro e um valor (por default o valor e NIL). A
-funcao devera retornar o tabuleiro com a celula substituída pelo valor pretendido"
+funcao devera retornar o tabuleiro com a celula substituida pelo valor pretendido"
   (cond
    ((null tabuleiro) '())
    ((or (eq nil lin) (eq nil col)) tabuleiro);; ver isto depois
@@ -154,50 +154,36 @@ funcao devera retornar o tabuleiro com a celula substituída pelo valor pretendi
    (t (1+ (contar-casas-validas (cdr linha))))))
 
 (defun contar-casas-validas-tabuleiro (tabuleiro &optional (l 0))
-
+"Devolve o numero de casas validas no tabuleiro."
   (if (and (>= l 0) (<= l 9))
       (+ (contar-casas-validas (linha l tabuleiro)) (contar-casas-validas-tabuleiro tabuleiro (1+ l)))
       0))
 
 (defun casas-validas-posicoes (tabuleiro &optional (casas (linha 0 tabuleiro)))
-
+"Devolve uma lista com as posicoes das casas validas."
   (mapcar #'(lambda (l)
               (posicao-valor l tabuleiro))
     (remover-se #'(lambda (x) (eq x nil)) casas)))
 
 
 (defun media-casas-pontos (tabuleiro)
+  "Media por casa dos pontos que constam no tabuleiro x."
   (let ((media (/ (somar-tabuleiro tabuleiro) (contar-casas-validas-tabuleiro tabuleiro))))
     (if (= media 0)
         1
         media)))
 
-;;(format-tabuleiro (posicionar-cavalo (tabuleiro-teste)))
-(defun posicionar-cavalo (tabuleiro)
-  "Posicionar o cavalo (T) na primeira linha e numa coluna aleatoria valida
-    (devolve o tabuleiro com o cavalo posicionado.)"
-  (if (eq nil (posicao-cavalo tabuleiro))
-
-      ;;meter cavalo numa posicao aleatoria na linha 0 (primeira linha)
-      #|(substituir 0 (random
-                      (contar-casas-validas (linha 0 tabuleiro))) tabuleiro T)|#
-      (let* ((tabuleiroJogada (substituir 0 (cadr (nth (random (contar-casas-validas (linha 0 tabuleiro))) (casas-validas-posicoes tabuleiro))) tabuleiro T))
-             (duplo (nth (random (length (posicao-duplos tabuleiroJogada))) (posicao-duplos tabuleiroJogada)))
-             (pos (posicao-cavalo tabuleiroJogada)))
-        (if (eq t (duplop (celula (car pos) (cadr pos) tabuleiro)))
-            (substituir (car duplo) (cadr duplo) tabuleiroJogada)
-            (eliminar-simetrico (celula (car pos) (cadr pos) tabuleiro) tabuleiroJogada)))
-
-      ;;ja existe cavalo por isso nao fazer nada (devolver tabuleiro).
-      tabuleiro))
 
 
-(defun posicionar-cavalo2 (tabuleiro &optional (lin 0) (col 0))
+
+(defun posicionar-cavalo (tabuleiro &optional (lin 0) (col 0))
+  "Posiciona o cavalo no tabuleiro na dada linha, coluna."
   (substituir lin col tabuleiro T))
 
 (defun tabuleiros-cavalo-inicial (tabuleiro-sem-cavalo)
+  "Devolve uma lista com os tabuleiros em que o cavalo está posicionado numa casa valida da primeira linha."
   (mapcar #'(lambda (pos)
-              (posicionar-cavalo2 tabuleiro-sem-cavalo (car pos) (cadr pos)))
+              (posicionar-cavalo tabuleiro-sem-cavalo (car pos) (cadr pos)))
     (casas-validas-posicoes tabuleiro-sem-cavalo)))
 
 ;; (n-simetrico 96)
@@ -242,6 +228,7 @@ funcao devera retornar o tabuleiro com a celula substituída pelo valor pretendi
 
 ;; lista com todos os duplos ate 99
 (defun lista-duplos ()
+  "lista com duplos ate 99"
   (list 11 22 33 44 55 66 77 88 99))
 
 ;; (posicao-duplos (tabuleiro-teste))

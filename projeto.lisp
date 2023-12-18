@@ -1,11 +1,12 @@
 ;;  Carrega os outros ficheiros de codigo, 
 ;;  escreve e le ficheiros, e trata da interacao com o utilizador
-;;  Autores: Nuno Martinho e Joao Coelho.
+;;  Autores: Nuno Martinho e Joao Coelho e João Barbosa.
 
 ;; ============ CARREGAR FICHEIROS ============
 
 (defun diretorio ()
-    "C:/Users/joaor/OneDrive/Documentos/IPS/ESTS/LEI/3_ANO/IA/Projeto/ia-projeto1/"
+;;    "C:/Users/joaor/OneDrive/Documentos/IPS/ESTS/LEI/3_ANO/IA/Projeto/ia-projeto1/"
+      "U:/Documents/LEI/AnoCorrente/ia/PROJETO/"
 )
 
 (compile-file (concatenate 'string (diretorio) "procura.lisp"))
@@ -507,4 +508,4 @@
 )
 
 
-(jogar)
+;;(jogar)

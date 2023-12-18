@@ -1,7 +1,9 @@
+;;  Autores: Nuno Martinho e Joao Coelho e João Barbosa.
+
 ;; ============= ESTRUTURAS =============
 ;; <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade> <h> <f>)
 ;; <solucao>::= (<caminho-solucao> <n-abertos> <n-fechados>)
-;; <solucao-a*>::= (<caminho-solucao> <n-abertos> <n-fechados> <n-nos-expandidos>)
+
 
 ;; ============= ALGORITMOS =============
 
@@ -29,165 +31,123 @@
 
 
 (defun a* (tabuleiro pontos-objetivo expandir-nos fn-calcular-pontos fn-pos-cavalo tabuleiros-cavalo-inicial fn-heuristica)
-
-  (let* ((no-inicial(criar-no-inicial-a* tabuleiro pontos-objetivo 0 0 0 0))
+  "Algoritmo A* recursivo para resolver o problema do cavalo."
+  (let* ((no-inicial (criar-no-inicial-a* tabuleiro pontos-objetivo 0 0 0 0))
          (primeiros-sucessores
-          (if (funcall fn-pos-cavalo tabuleiro) (list no-inicial) (gerar-sucessores-a* no-inicial tabuleiros-cavalo-inicial fn-calcular-pontos fn-heuristica))
-          )
-          (abertos primeiros-sucessores)
-          )
-          (a*-aux2 abertos '() (lambda (no) (gerar-sucessores-a* no expandir-nos fn-calcular-pontos fn-heuristica)) fn-calcular-pontos fn-heuristica)
-         )
-          
-    
-    )
-  
-
-
+          (if (funcall fn-pos-cavalo tabuleiro) (list no-inicial) (gerar-sucessores-a* no-inicial tabuleiros-cavalo-inicial fn-calcular-pontos fn-heuristica)))
+         (abertos primeiros-sucessores))
+    (a*-aux abertos '() (lambda (no) (gerar-sucessores-a* no expandir-nos fn-calcular-pontos fn-heuristica)) fn-calcular-pontos fn-heuristica)))
 
 
 ;; ============= AUX ALGORITMOS =============
 (defun bfs-recursivo-aux (abertos fechados expandir-nos)
+  "Auxiliar da função bfs"
   (cond
    ((null abertos) '())
    (t
-     (let* ((no-atual (car abertos))
-            (novos-fechados (append fechados (list no-atual)))
-            (sucessores (funcall expandir-nos no-atual))
-            (novos-abertos (append (cdr abertos) sucessores)))
-       (if (verificar-solucao no-atual)
-           (list (caminho-solucao no-atual) (length abertos) (length fechados))
-           (bfs-recursivo-aux novos-abertos novos-fechados expandir-nos))))))
+     (let* ((no-atual (car abertos)) ;; remove o no-atual de abertos
+                                    (novos-fechados (append fechados (list no-atual))) ;; coloca o no em fechados
+                                    (sucessores (funcall expandir-nos no-atual)) ;; expande o no
+                                    (novos-abertos (append (cdr abertos) sucessores))) ;; mete os novos sucessores em abertos
+       (if (verificar-solucao no-atual) ;; verifica se é solução
+           (list (caminho-solucao no-atual) (length abertos) (length fechados)) ;; se sim devolve o caminho solução com nAbertos e n fechados
+           (bfs-recursivo-aux novos-abertos novos-fechados expandir-nos)))))) ;; Se não, continua a procurar
 
 (defun dfs-recursivo-aux (abertos fechados expandir-nos d)
   (cond
    ((null abertos) '())
    (t
-     (let* ((no-atual (car abertos))
-            (novos-fechados (append fechados (list no-atual)))
-            (sucessores (funcall expandir-nos no-atual))
-            (novos-abertos (append (cdr abertos) sucessores)))
-       (cond
-        ((verificar-solucao no-atual) (list (caminho-solucao no-atual) (length abertos) (length fechados)))
-        ((>= (no-profundidade no-atual) d) (dfs-recursivo-aux (cdr abertos) novos-fechados expandir-nos d))
-        (t (dfs-recursivo-aux novos-abertos novos-fechados expandir-nos d)))))))
+     (let* ((no-atual (car abertos)) ;; remove o no-atual de abertos
+                                    (novos-fechados (append fechados (list no-atual))) ;; coloca o no em fechados
+
+                                    )
+       (if (> (no-profundidade no-atual) d) ;; verificar se a profundidade de um no maior que o limite d
+           (dfs-recursivo-aux (cdr abertos) novos-fechados expandir-nos d) ;; Se sim, passa para outro no
+           (let* ((sucessores (funcall expandir-nos no-atual)) ;; expande o no
+                  (novos-abertos (append sucessores (cdr abertos)))) ;; coloca os sucessores no inicio de abertos.
+             (cond
+              ((verificar-solucao no-atual) (list (caminho-solucao no-atual) (length abertos) (length fechados))) ;;devolve o caminho solucao com n Abertos e n fechados
+
+              (t (dfs-recursivo-aux novos-abertos novos-fechados expandir-nos d))))))))) ;; caso contrario continua a explorar em profundidade
 
 
 ;; ============= AUXILIARES A* =============
 
 
-
-(defun a*-aux2 (abertos fechados expandir-nos fn-calcular-pontos fn-heuristica &optional (numeroExpandidos 0))
+(defun a*-aux (abertos fechados expandir-nos fn-calcular-pontos fn-heuristica)
+  "Funcao auxiliar a*, que processa os nos"
   (if (null abertos)
       '()
-      (let* (
-             (no-atual (car (ordenar-por-f abertos)))
-             (novos-fechados (ordenar-por-f (append fechados (list no-atual))))
-             (sucessores (funcall expandir-nos no-atual))
-             (fechados-para-abrir (recalcular-fechados fechados sucessores no-atual))
-             (novos-abertos (recalcular-abertos (cdr abertos) sucessores no-atual) )
-             (abertos-com-novos-fechados (append novos-abertos (remover-duplicados-com-maior-f sucessores novos-abertos) fechados-para-abrir))
+      (let* ((no-atual (car (ordenar-por-f abertos)));; remove o no-atual com menor f de abertos
+                                                     (novos-fechados (ordenar-por-f (append fechados (list no-atual)))) ;; mete em fechados por ordem de f
+                                                     (sucessores (funcall expandir-nos no-atual)) ;; expande o no
+                                                     (fechados-para-abrir (recalcular-fechados fechados sucessores no-atual)) ;;ve se algum sucessor existe em fechados, se sim fica o que tem menor valor de f para passar para abertos
+                                                     (novos-abertos (recalcular-abertos (cdr abertos) sucessores no-atual)) ;;verifica entre os abertos e sucessores se existe algum estado igual, se sim fica o com menor valor de f
+                                                     (abertos-com-novos-fechados (append novos-abertos (remover-duplicados sucessores novos-abertos) fechados-para-abrir)) ;;junta em abertos, os sucessores que nao estao em abertos nem fechados, e os novos fechados para abertos
              )
-        
-        (if (verificar-solucao no-atual)
-            (list (caminho-solucao no-atual) (length abertos) (length fechados) numeroExpandidos)
-            (a*-aux2 abertos-com-novos-fechados (remover-duplicados-com-maior-f novos-fechados fechados-para-abrir) expandir-nos fn-calcular-pontos fn-heuristica (1+ numeroExpandidos))
-            )
-        
-        )
-      
- 
-      )
-  
-  )
 
-
-
-
+        (if (verificar-solucao no-atual) ;; verifica se � no solucao
+            (list (caminho-solucao no-atual) (length abertos) (length fechados)) ;; da a solucao
+            (a*-aux abertos-com-novos-fechados (remover-duplicados novos-fechados fechados-para-abrir) expandir-nos fn-calcular-pontos fn-heuristica) ;; continua
+            ))))
 
 
 (defun recalcular-abertos (abertos sucessores no-pai)
-    "Recebe uma lista de nos abertos, lista de nos expandidos e o no pai
+  "Recebe uma lista de nos abertos, lista de nos expandidos e o no pai
     Se algum no expandido existe em abertos, ficam o no com o menor valor de f e trocamos o pai, e retornamos os novos abertos"
-    (mapcar 
-        #'(lambda (no-aberto)
-            (let ( (novos-abertos (recalcular-no no-aberto sucessores) ) )
-                (if (null novos-abertos) 
-                    no-aberto 
-                    (trocar-no-pai (car (ordenar-por-f novos-abertos)) no-pai)
-                )
-            )
-          ) abertos)
-  )
+  (mapcar
+      #'(lambda (no-aberto)
+          (let ((novos-abertos (recalcular-no no-aberto sucessores)))
+            (if (null novos-abertos)
+                no-aberto
+                (trocar-no-pai (car (ordenar-por-f novos-abertos)) no-pai)))) abertos))
 
 (defun recalcular-fechados (fechados sucessores no-pai)
-    "Recebe uma lista de nos fechados, lista de nos expandidos e o no pai
+  "Recebe uma lista de nos fechados, lista de nos expandidos e o no pai
     Se algum no expandido existe em fechados, ficam os nos com o menor valor de f e trocamos o pai, 
     e retornamos os novos fechados para passarem em abertos"
-  (remove-if #'(lambda (x) (eq x nil)) 
-    
-  (mapcar 
+  (remove-if #'(lambda (x) (eq x nil))
+
+    (mapcar
         #'(lambda (no-fechado)
-            (let ( (novos-fechados (recalcular-no no-fechado sucessores) ) )
-                (if (null novos-fechados) 
-                    NIL 
-                    (trocar-no-pai (car (ordenar-por-f novos-fechados)) no-pai)
-                )
-            )
-          ) fechados)
-    
-    )  
-)
+            (let ((novos-fechados (recalcular-no no-fechado sucessores)))
+              (if (null novos-fechados)
+                  NIL
+                  (trocar-no-pai (car (ordenar-por-f novos-fechados)) no-pai)))) fechados)))
 
 (defun trocar-no-pai (no no-pai)
-  (criar-no 
+  "Troca do no recebido o no pai pelo pai recebido."
+  (criar-no
     (no-tabuleiro no)
     no-pai
     (no-pontos-final no)
     (no-pontos-atual no)
     (no-profundidade no)
     (no-h no)
-    (no-f no)
-    
-    )
-  
-  )
+    (no-f no)))
 
 (defun recalcular-no (no sucessores)
-    "Se o no dado existir na lista de nos expandidos, altera-se o no da lista com o menor valor de f entre os 2."
-    (remove-if #'(lambda (x) (eq x nil)) 
-        (mapcar
-            #'(lambda(no-sucessor)
-                (if (comparar-estados no no-sucessor) 
-                    (if (<= (no-f no-sucessor) (no-f no) )
-                        no-sucessor
-                        nil
-                    )
-                    nil
-                )
-            
-            ) sucessores)
-    )
-)
+  "Se o no dado existir na lista de nos expandidos, altera-se o no da lista com o menor valor de f entre os 2."
+  (remove-if #'(lambda (x) (eq x nil))
+    (mapcar
+        #'(lambda (no-sucessor)
+            (if (comparar-estados no no-sucessor)
+                (if (<= (no-f no-sucessor) (no-f no))
+                    no-sucessor
+                    nil)
+                nil)) sucessores)))
 
 
-(defun remover-duplicados-com-maior-f (sucessores lista2)
-  "Remove da sucessores os elementos que estão na lista2 se o estado for igual e o valor de F de sucessores for maior que lista2"
-  (remove-if #'(lambda (x) (eq x nil)) 
-      
-    (mapcar 
-      #'(lambda (sucessor)
-          (let ((no-igual (encontrar-no sucessor lista2)))
-            (if no-igual
-                NIL
-                sucessor
-            )
-            )
-            
-            )sucessores)
-      
-      )
-  )
+(defun remover-duplicados (sucessores lista2)
+  "Remove da sucessores os elementos que estão na lista2 se o estado for igual."
+  (remove-if #'(lambda (x) (eq x nil))
+
+    (mapcar
+        #'(lambda (sucessor)
+            (let ((no-igual (encontrar-no sucessor lista2)))
+              (if no-igual
+                  NIL
+                  sucessor))) sucessores)))
 
 
 #|Exemplo de uso:
@@ -202,10 +162,6 @@
    ((>= (no-pontos-atual no-atual) (no-pontos-final no-atual)) T)
    (t NIL)))
 
-(defun algum-objetivo-p (sucessores)
-  "Verifica se algum dos sucessores e um no objetivo."
-  (some #'(lambda (sucessor) (verificar-solucao sucessor)) sucessores))
-
 (defun caminho-solucao (no)
   "Devolve uma lista de nos do no inicial ate ao no da solucao."
   (if (null (no-pai no))
@@ -219,11 +175,6 @@
                   (no-profundidade no))
             (caminho-solucao (no-pai no)))))
 
-(defun caminho-solucao-a* (no)
-  "Devolve uma lista de nos do no inicial ate ao no da solucao para A*."
-  (if (null (no-pai no))
-      (list no)
-      (cons no (caminho-solucao-a* (no-pai no)))))
 
 ;; ============= HEURISTICAS E AVALIACAO =============
 
@@ -233,12 +184,11 @@
   o(x) e o numero de pontos que faltam para atingir o valor definido como objetivo."
 
   (let ((o (- (no-pontos-final no) (no-pontos-atual no)))
-        (m (funcall fn-calcular-m (no-tabuleiro no)))
-        )
-    (/ o m)
-    )
+        (m (funcall fn-calcular-m (no-tabuleiro no))))
+    (/ o m)))
 
-  )
+(defun heuristica-personalizada ()
+  (format T "nao implementado."))
 
 (defun calcular-f (no)
   "Calcula o valor de f (funcao avaliacao) de um no."
@@ -250,18 +200,17 @@
 ;; ============= NOS =============
 
 (defun no-teste ()
-  '(  (
-    (02   20   44   nil  nil  nil  nil  nil  nil  nil)
-    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
-    (nil  03   30   nil  nil  nil  nil  nil  nil  nil)
-    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
-    (nil  nil  nil  22   nil  nil  nil  nil  nil  nil)
-    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
-    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
-    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
-    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
-    (nil  nil  nil  nil  nil  nil  nil  nil  nil  nil)
-  )
+  "Função usada para testar outras funções que precisem de um no."
+  '(((02 20 44 nil nil nil nil nil nil nil)
+     (nil nil nil nil nil nil nil nil nil nil)
+     (nil 03 30 nil nil nil nil nil nil nil)
+     (nil nil nil nil nil nil nil nil nil nil)
+     (nil nil nil 22 nil nil nil nil nil nil)
+     (nil nil nil nil nil nil nil nil nil nil)
+     (nil nil nil nil nil nil nil nil nil nil)
+     (nil nil nil nil nil nil nil nil nil nil)
+     (nil nil nil nil nil nil nil nil nil nil)
+     (nil nil nil nil nil nil nil nil nil nil))
 
     NIL
     70
@@ -283,7 +232,7 @@
 (defun gerar-sucessores-a* (no-atual fn-expandir-no fn-calcular-pontos fn-heuristica)
   (let* ((sucessores (gerar-sucessores no-atual fn-expandir-no fn-calcular-pontos)))
     (mapcar (lambda (no)
-              
+
               (let ((heuristica (funcall fn-heuristica no)))
                 (criar-no (no-tabuleiro no)
                           (no-pai no)
@@ -291,16 +240,12 @@
                           (no-pontos-atual no)
                           (no-profundidade no)
                           heuristica
-                          (+ (no-profundidade no) heuristica)))
-            ) sucessores)
-    )
-  )
-
+                          (+ (no-profundidade no) heuristica)))) sucessores)))
 
 
 ;; (gerar-sucessores (no-teste) 'usar-operadores 'calcular-pontos)
 (defun gerar-sucessores (no-atual fn-expandir-no fn-calcular-pontos)
-  "Recebe um no e a funcao de expansão de nos, 
+  "Recebe um no e a funcao de expansao de nos, 
   (a funcao passada normalmente vai ser a usar-operadores que ira gerar uma lista das proximas jogadas)
   depois essa lista de tabuleiros sera convertida para uma lista de nos."
   (mapcar #'(lambda (tab)
@@ -317,20 +262,16 @@
 ;; <solucao-a*>::= (<caminho-solucao> <n-abertos> <n-fechados> <n-nos-expandidos>)
 
 (defun encontrar-no (no lista)
-  
+"Encontra um no presente na lista recebida e devolve o no encontrado nessa lista."
   (cond
    ((null lista) nil)
    ((comparar-estados no (car lista)) (car lista))
-   (t (encontrar-no no (cdr lista)))
-   
-   )
-  
-  )
+   (t (encontrar-no no (cdr lista)))))
 
 
 (defun comparar-estados (no1 no2)
+  "Compara o tabuleiro do no1 com o no2, devolve T se forem iguais, caso contrario NIL"
   (equal (no-tabuleiro no1) (no-tabuleiro no2)))
-
 
 
 ;; NO
@@ -339,7 +280,7 @@
   (first no))
 
 (defun no-pai (no)
-  "retorna o nó pai do no recebido"
+  "retorna o no pai do no recebido"
   (second no))
 
 (defun no-pontos-final (no)
@@ -415,14 +356,10 @@
   "Retorna o numero de nos gerados"
   (+ (solucao-abertos solucao) (solucao-fechados solucao)))
 
-(defun num-nos-expandidos-a* (solucao)
-  "Retorna o numero de nos expandidos (a*)"
-  (fourth solucao))
-
 
 ;; ============ MEDIDAS DE DESEMPENHO ============
 
-;; fator de ramificação média
+;; fator de ramificacao media
 (defun fator-ramificacao-media (lista &optional (L (tamanho-solucao lista)) (valor-T (num-nos-gerados lista)) (B-min 0) (B-max valor-T) (margem 0.1))
   "Retorna o fator de ramificacao media (metodo bisseccao)"
   (float (let ((B-avg (/ (+ B-min B-max) 2)))
