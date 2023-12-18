@@ -280,7 +280,7 @@ Função que gera um tabuleiro com valores aleatórios (tabuleiro n x n) com val
     (casas-validas-posicoes tabuleiro-sem-cavalo)))
 ```
 
-Função que trata de mover o cavalo para a posição indicada (linha e coluna) e depois aplica as regras do jogo, removendo o simétrico ou o número duplo referente ao valor da casa em que o cavalo se deslocou.
+Função que trata de mover o cavalo para a posição indicada (linha e coluna) e depois aplica as regras do jogo, removendo o simétrico ou o número duplo referente ao valor da casa em que o cavalo se deslocou, retorna o tabuleiro com as devidas alterações.
 
 ```lisp
 (defun mover-cavalo (tabuleiro &optional (valLinha 0) (valColuna 0))
@@ -306,11 +306,17 @@ Função que trata de mover o cavalo para a posição indicada (linha e coluna) 
 
 <a id="procura.lisp"></a>
 
-### procura.lisp
+### **procura.lisp**
 
 ---
 
 Aqui estão as funções principais dos algoritmos desenvolvidos de forma recursiva.
+
+- ***BFS-RECURSIVO:*** Função que trata do processo do algotimo bfs, transforma o tabuleiro recebido num nó e gera os primeiros sucessores, caso o tabuleiro não tenha o cavalo posicionado. Coloca esse nó numa lista de abertos e depois chama a função recursiva ***bfs-aux*** que trata de todo o processo do algoritmo ***BFS***.
+- ***DFS-RECURSIVO:*** Função que trata do processo do algoritmo dfs, essencialmente faz a mesma coisa que a função anterior, com diferença que chama a função recursiva ***dfs-aux*** que trata de todo o processo do algoritmo.
+- ***A\*:*** Função primária do algoritmo, funciona de forma similar aos anteriores, mas chama a função a\*-aux 
+
+> O código abaixo está devidamente comentado a cada linha importante, mais especificamente nos algoritmos auxiliares.
 
 ```lisp
 ;; ============= ALGORITMOS =============
@@ -326,6 +332,20 @@ Aqui estão as funções principais dos algoritmos desenvolvidos de forma recurs
          (abertos primeiros-sucressores))
     (bfs-recursivo-aux abertos '() (lambda (no) (gerar-sucessores no expandir-nos fn-calcular-pontos)))))
 
+(defun bfs-recursivo-aux (abertos fechados expandir-nos)
+  "Auxiliar da função bfs"
+  (cond
+   ((null abertos) '())
+   (t
+     (let* ((no-atual (car abertos)) ;; remove o no-atual de abertos
+                                    (novos-fechados (append fechados (list no-atual))) ;; coloca o no em fechados
+                                    (sucessores (funcall expandir-nos no-atual)) ;; expande o no
+                                    (novos-abertos (append (cdr abertos) sucessores))) ;; mete os novos sucessores em abertos
+       (if (verificar-solucao no-atual) ;; verifica se é solução
+           (list (caminho-solucao no-atual) (length abertos) (length fechados)) ;; se sim devolve o caminho solução com nAbertos e n fechados
+           (bfs-recursivo-aux novos-abertos novos-fechados expandir-nos)))))) ;; Se não, continua a procurar
+
+
 ;; DFS RECURSIVO
 (defun dfs-recursivo (tabuleiro pontos-objetivo expandir-nos fn-calcular-pontos fn-pos-cavalo tabuleiros-cavalo-inicial &optional (d 20))
   "Algoritmo DFS recursivo para resolver o problema do cavalo."
@@ -336,6 +356,24 @@ Aqui estão as funções principais dos algoritmos desenvolvidos de forma recurs
          (abertos primeiros-sucressores))
     (dfs-recursivo-aux abertos '() (lambda (no) (gerar-sucessores no expandir-nos fn-calcular-pontos)) d)))
 
+(defun dfs-recursivo-aux (abertos fechados expandir-nos d)
+  (cond
+   ((null abertos) '())
+   (t
+     (let* ((no-atual (car abertos)) ;; remove o no-atual de abertos
+                                    (novos-fechados (append fechados (list no-atual))) ;; coloca o no em fechados
+
+                                    )
+       (if (> (no-profundidade no-atual) d) ;; verificar se a profundidade de um no maior que o limite d
+           (dfs-recursivo-aux (cdr abertos) novos-fechados expandir-nos d) ;; Se sim, passa para outro no
+           (let* ((sucessores (funcall expandir-nos no-atual)) ;; expande o no
+                  (novos-abertos (append sucessores (cdr abertos)))) ;; coloca os sucessores no inicio de abertos.
+             (cond
+              ((verificar-solucao no-atual) (list (caminho-solucao no-atual) (length abertos) (length fechados))) ;;devolve o caminho solucao com n Abertos e n fechados
+
+              (t (dfs-recursivo-aux novos-abertos novos-fechados expandir-nos d))))))))) ;; caso contrario continua a explorar em profundidade
+
+
 (defun a* (tabuleiro pontos-objetivo expandir-nos fn-calcular-pontos fn-pos-cavalo tabuleiros-cavalo-inicial fn-heuristica)
   "Algoritmo A* recursivo para resolver o problema do cavalo."
   (let* ((no-inicial (criar-no-inicial-a* tabuleiro pontos-objetivo 0 0 0 0))
@@ -343,6 +381,25 @@ Aqui estão as funções principais dos algoritmos desenvolvidos de forma recurs
           (if (funcall fn-pos-cavalo tabuleiro) (list no-inicial) (gerar-sucessores-a* no-inicial tabuleiros-cavalo-inicial fn-calcular-pontos fn-heuristica)))
          (abertos primeiros-sucessores))
     (a*-aux abertos '() (lambda (no) (gerar-sucessores-a* no expandir-nos fn-calcular-pontos fn-heuristica)) fn-calcular-pontos fn-heuristica)))
+
+
+    (defun a*-aux (abertos fechados expandir-nos fn-calcular-pontos fn-heuristica)
+  "Funcao auxiliar a*, que processa os nos"
+  (if (null abertos)
+      '()
+      (let* ((no-atual (car (ordenar-por-f abertos)));; remove o no-atual com menor f de abertos
+                                                     (novos-fechados (ordenar-por-f (append fechados (list no-atual)))) ;; mete em fechados por ordem de f
+                                                     (sucessores (funcall expandir-nos no-atual)) ;; expande o no
+                                                     (fechados-para-abrir (recalcular-fechados fechados sucessores no-atual)) ;;ve se algum sucessor existe em fechados, se sim fica o que tem menor valor de f para passar para abertos
+                                                     (novos-abertos (recalcular-abertos (cdr abertos) sucessores no-atual)) ;;verifica entre os abertos e sucessores se existe algum estado igual, se sim fica o com menor valor de f
+                                                     (abertos-com-novos-fechados (append novos-abertos (remover-duplicados sucessores novos-abertos) fechados-para-abrir)) ;;junta em abertos, os sucessores que nao estao em abertos nem fechados, e os novos fechados para abertos
+             )
+
+        (if (verificar-solucao no-atual) ;; verifica se � no solucao
+            (list (caminho-solucao no-atual) (length abertos) (length fechados)) ;; da a solucao
+            (a*-aux (remover-duplicados (reverse (ordenar-por-f abertos-com-novos-fechados)) (ordenar-por-f fechados-para-abrir)) 
+                    (remover-duplicados novos-fechados fechados-para-abrir) expandir-nos fn-calcular-pontos fn-heuristica) ;; continua
+            ))))
 ```
 
 Aqui estão as funções referentes ao desempenho dos algoritmos:
@@ -449,7 +506,7 @@ Tabuleiro F (aleatório)
 
 Analisando a tabela com os resultados gerados pelos algoritmos, podemos observar que os algoritmos DFS e A* são os mais eficientes em relação ao algoritmo BFS que tem uma performance menor, e quando apresentado com um problema com uma escala maior, muitas das vezes não o consegue o resolver (como mostrado no problema F).
 
-Podemos reparar também que para este tipo de jogo o DFS aparenta encontrar uma solução mais rápida e com uma penetrância mais perto de 1, que o A*, essa solução não sendo necessariamente a melhor solução. Isto deve-se à natureza do jogo e dos algoritmos, em que enquanto o algoritmo A* tenta encontrar o caminho com menor valor para a função de avaliação (gerando e expandindo nós), o DFS só procura num certo caminho até à profundidade limite definida pelo utilizador.
+Podemos reparar também que para este tipo de jogo o DFS aparenta encontrar uma solução mais rápida e com uma penetrância mais perto de 1, que o A*, essa solução não sendo necessariamente a melhor solução. Isto deve-se à natureza do jogo, os algoritmos e da heuristica usada O algoritmo A* tenta encontrar o caminho com menor valor para a função de avaliação (gerando e expandindo nós), o DFS só procura num certo caminho até à profundidade limite definida pelo utilizador, podendo encontrar uma solução mais rápida e sem gerar/expandir mais nós.
 
 <a id="limitações"></a>
 
