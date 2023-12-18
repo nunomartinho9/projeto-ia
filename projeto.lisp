@@ -39,10 +39,10 @@
                     (iniciar)
             ))
             (3 
-                (progn 
-                    (format t "Obrigado por jogar!~%~%")
+                (progn
                     (finish-output)
                     (clear-output)
+                    (format t "Obrigado por jogar!~%~%")
             ))
 
             (otherwise (progn (format t "Escolha uma opcao valida!") (iniciar)))    
@@ -168,7 +168,7 @@
     )
 )
 
-;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>)
+;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <heuristica/profundidade>)
 
 ;; <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade> <>)
 ;; <solucao>::= (<caminho-solucao> <n-abertos> <n-fechados>)
@@ -239,7 +239,7 @@
 "Recebe um valor de profundidade maxima do utilizador."
     (if (not (profundidade-menu))
         (let ((opcao (read)))
-            (cond ((equal opcao 0) (opcao-tabuleiro))
+            (cond ((equal opcao 0) (iniciar))
                   ((equal opcao 1) 20)
                   ((or (not (numberp opcao)) (< opcao 0))
                     (progn
@@ -258,7 +258,7 @@
 "Recebe um valor que corresponde a heuristica escolhida pelo utilizador"
     (if (not (heuristica-menu))
         (let ((opcao (read)))
-            (cond ((equal opcao '0) (opcao-tabuleiro))
+            (cond ((equal opcao '0) (iniciar))
                   ((or (not (numberp opcao)) (< opcao 0) (> opcao 2))
                     (progn
                         (format t "Escolha uma opcao valida!~%")
@@ -282,7 +282,7 @@
 
 
 ;; ============ FORMATAR SOLUCAO ============
-;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim>)
+;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <heuristica/profundidade>)
 
 (defun format-no-solucao (no &optional (stream t))
 "Formata o tabuleiro."
@@ -447,7 +447,6 @@
 
 ;; ============= ESTATISTICAS =============
 
-;;(ficheiro-estatisticas '(<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>))
 (defun ficheiro-estatisticas (resultado)
 "Ficheiro de resultados estatisticos (solucao + dados estatisticos sobre a eficiencia)."
     (with-open-file (stream (concatenate 'string (diretorio) "resultados.dat") :direction :output :if-does-not-exist :create :if-exists :append)

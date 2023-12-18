@@ -5,7 +5,7 @@
 ;; ============ CARREGAR FICHEIROS ============
 
 (defun diretorio ()
-    "C:/Users/joaor/Downloads/ia-projeto1/"
+    "C:/Users/joaor/OneDrive/Documentos/IPS/ESTS/LEI/3_ANO/IA/Projeto/ia-projeto1/"
 )
 
 (compile-file (concatenate 'string (diretorio) "procura.lisp"))
@@ -43,7 +43,6 @@
                     (format t "Obrigado por jogar!~%~%")
                     (finish-output)
                     (clear-output)
-                    (quit)
             ))
 
             (otherwise (progn (format t "Escolha uma opcao valida!") (iniciar)))    
@@ -137,7 +136,7 @@
         (format t "~%|       - Defina a heuristica a utilizar -       |")
         (format t "~%|                                                |")
         (format t "~%|           1 - Heuristica Enunciado             |")
-        (format t "~%|         2 - Heuristica Personalizada           |")
+        ;(format t "~%|         2 - Heuristica Personalizada           |")
         (format t "~%|                                                |")
         (format t "~%|                  0 - Voltar                    |")
         (format t "~%o                                                o")
@@ -270,9 +269,11 @@
                         (1
                             'heuristica-base
                         )
+#|
                         (2
                             'heuristica-top
                         )
+|#
                   ))
             )
         )
@@ -340,11 +341,6 @@
 
 ;;; ============= INPUT/OUTPUT =============
 
-(defun caminho-problemas()
-"Devolve o path para o ficheiro (C:/Users/joaor/Downloads/ia-projeto1/problemas.dat)"
-    (make-pathname :host "c" :directory '(:absolute "/Users/joaor/Downloads/ia-projeto1/") :name "resultados" :type "dat")
-)
-
 ;; (ler-tabuleiros)
 (defun ler-tabuleiros ()
 "Le os tabuleiros no ficheiro problemas.dat."
@@ -409,9 +405,9 @@
 
 ;; ============= TABULEIRO F =============
 
-(defun escrever-no-ficheiro (dados caminho-ficheiro)
+(defun escrever-no-ficheiro (dados)
 "Escrever no ficheiro passado como parametro."
-    (with-open-file (stream caminho-ficheiro :direction :output :if-exists :supersede)
+    (with-open-file (stream (concatenate 'string (diretorio) "problemas.dat") :direction :output :if-exists :supersede)
         (dolist (item dados)
             (write item :stream stream)
             (terpri stream)
@@ -440,7 +436,7 @@
         (when dados-ficheiro
             (let ((dados-atualizados (substituir-tabuleiro-f dados-ficheiro novo-tabuleiro)))
                 (if dados-atualizados
-                    (escrever-no-ficheiro dados-atualizados (concatenate 'string (diretorio) "problemas.dat"))
+                    (escrever-no-ficheiro dados-atualizados)
                     (format t "Tabuleiro F nao gerado!")
                 )
             )
@@ -448,40 +444,13 @@
     )
 )
 
-#|
-(defun substituir-valor-lista (lista indice novo-valor)
-"Susbtitui um valor numa lista."
-    (if (and (listp lista) (>= (length lista) (1+ indice)))
-        (let ((antes (subseq lista 0 indice))
-                (depois (subseq lista (1+ indice)))
-            )
-            (append antes (list novo-valor) depois)
-        )
-      (format t "O indice do elemento nao consta na lista."))
-)
-
-(defun substituir-lista-ordenada (dados indice-lista nova-lista)
-    (if (and (listp dados) (>= (length dados) (1+ indice-lista)))
-        (let ((antes (subseq dados 0 indice-lista))
-                (depois (subseq dados (1+ indice-lista))))
-            (append antes (list nova-lista) depois))
-        (format t "O indice da lista esta fora dos valores esperados.")
-    )
-)
-|#
-
 
 ;; ============= ESTATISTICAS =============
-
-(defun caminho-estatisticas()
-"Devolve o path para o ficheiro (C:/Users/joaor/Downloads/ia-projeto1/resultados.dat)"
-    (make-pathname :host "c" :directory '(:absolute "/Users/joaor/Downloads/ia-projeto1/") :name "resultados" :type "dat")
-)
 
 ;;(ficheiro-estatisticas '(<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>))
 (defun ficheiro-estatisticas (resultado)
 "Ficheiro de resultados estatisticos (solucao + dados estatisticos sobre a eficiencia)."
-    (with-open-file (stream (caminho-estatisticas) :direction :output :if-does-not-exist :create :if-exists :append)
+    (with-open-file (stream (concatenate 'string (diretorio) "resultados.dat") :direction :output :if-does-not-exist :create :if-exists :append)
         (estatisticas stream resultado)
         (finish-output stream)
         (close stream)
@@ -490,12 +459,12 @@
 
 (defun duracao (hora-inicio hora-fim)
 "Calcula a diferenca entre dois valores temporais."
-    (let* ((diferenca (- hora-fim hora-inicio))
-        (milisegundos (/ diferenca 1000))
-        (segundos (floor (/ milisegundos 1000)))
-        (ms (mod (round milisegundos) 1000)))
-        
-        (format nil "~2,'0Ds ~3,'0,'0Dms" segundos ms)    
+; 1 segundo = 1000 milissegundos = 1000000 microsegundos
+    (let* (
+           (diferenca (- hora-fim hora-inicio))
+           (segundos (float (/ diferenca 1000)))
+        )
+        (format nil "~ds" segundos)
     )
 )
 
@@ -539,5 +508,3 @@
     ))
 )
 
-
-;;(jogar)
