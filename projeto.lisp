@@ -5,8 +5,8 @@
 ;; ============ CARREGAR FICHEIROS ============
 
 (defun diretorio ()
-;;    "C:/Users/joaor/OneDrive/Documentos/IPS/ESTS/LEI/3_ANO/IA/Projeto/ia-projeto1/"
-      "U:/Documents/LEI/AnoCorrente/ia/PROJETO/"
+    "C:/Users/joaor/OneDrive/Documentos/IPS/ESTS/LEI/3_ANO/IA/Projeto/ia-projeto1/"
+;;    "U:/Documents/LEI/AnoCorrente/ia/PROJETO/"
 )
 
 (compile-file (concatenate 'string (diretorio) "procura.lisp"))
@@ -170,10 +170,8 @@
 )
 
 ;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <heuristica/profundidade>)
-
 ;; <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade> <>)
 ;; <solucao>::= (<caminho-solucao> <n-abertos> <n-fechados>)
-;; <solucao-a*>::= (<caminho-solucao> <n-abertos> <n-fechados> <n-nos-expandidos>)
 
 (defun opcao-algoritmo ()
 "Recebe a opcao de algoritmo do utilizador e executa-o."

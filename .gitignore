@@ -8,3 +8,4 @@ testes.lisp
 /#projeto.lisp#
 problemas.dat
 *.lisp~
+*.dat~
