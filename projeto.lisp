@@ -40,10 +40,10 @@
                     (iniciar)
             ))
             (3 
-                (progn 
-                    (format t "Obrigado por jogar!~%~%")
+                (progn
                     (finish-output)
                     (clear-output)
+                    (format t "Obrigado por jogar!~%~%")
             ))
 
             (otherwise (progn (format t "Escolha uma opcao valida!") (iniciar)))    
@@ -137,7 +137,7 @@
         (format t "~%|       - Defina a heuristica a utilizar -       |")
         (format t "~%|                                                |")
         (format t "~%|           1 - Heuristica Enunciado             |")
-        (format t "~%|         2 - Heuristica Personalizada           |")
+        ;(format t "~%|         2 - Heuristica Personalizada           |")
         (format t "~%|                                                |")
         (format t "~%|                  0 - Voltar                    |")
         (format t "~%o                                                o")
@@ -169,7 +169,7 @@
     )
 )
 
-;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>)
+;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <heuristica/profundidade>)
 
 ;; <no>::= (<tabuleiro> <pai> <pontos-objetivo> <pontos-atual> <profundidade> <>)
 ;; <solucao>::= (<caminho-solucao> <n-abertos> <n-fechados>)
@@ -240,7 +240,7 @@
 "Recebe um valor de profundidade maxima do utilizador."
     (if (not (profundidade-menu))
         (let ((opcao (read)))
-            (cond ((equal opcao 0) (opcao-tabuleiro))
+            (cond ((equal opcao 0) (iniciar))
                   ((equal opcao 1) 20)
                   ((or (not (numberp opcao)) (< opcao 0))
                     (progn
@@ -259,7 +259,7 @@
 "Recebe um valor que corresponde a heuristica escolhida pelo utilizador"
     (if (not (heuristica-menu))
         (let ((opcao (read)))
-            (cond ((equal opcao '0) (opcao-tabuleiro))
+            (cond ((equal opcao '0) (iniciar))
                   ((or (not (numberp opcao)) (< opcao 0) (> opcao 2))
                     (progn
                         (format t "Escolha uma opcao valida!~%")
@@ -270,9 +270,11 @@
                         (1
                             'heuristica-base
                         )
+#|
                         (2
                             'heuristica-top
                         )
+|#
                   ))
             )
         )
@@ -281,7 +283,7 @@
 
 
 ;; ============ FORMATAR SOLUCAO ============
-;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim>)
+;; <resultado>::= (<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <heuristica/profundidade>)
 
 (defun format-no-solucao (no &optional (stream t))
 "Formata o tabuleiro."
@@ -446,7 +448,6 @@
 
 ;; ============= ESTATISTICAS =============
 
-;;(ficheiro-estatisticas '(<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>))
 (defun ficheiro-estatisticas (resultado)
 "Ficheiro de resultados estatisticos (solucao + dados estatisticos sobre a eficiencia)."
     (with-open-file (stream (concatenate 'string (diretorio) "resultados.dat") :direction :output :if-does-not-exist :create :if-exists :append)
@@ -458,12 +459,12 @@
 
 (defun duracao (hora-inicio hora-fim)
 "Calcula a diferenca entre dois valores temporais."
-    (let* ((diferenca (- hora-fim hora-inicio))
-        (milisegundos (/ diferenca 1000))
-        (segundos (floor (/ milisegundos 1000)))
-        (ms (mod (round milisegundos) 1000)))
-        
-        (format nil "~2,'0Ds ~3,'0,'0Dms" segundos ms)    
+; 1 segundo = 1000 milissegundos = 1000000 microsegundos
+    (let* (
+           (diferenca (- hora-fim hora-inicio))
+           (segundos (float (/ diferenca 1000)))
+        )
+        (format nil "~ds" segundos)
     )
 )
 
@@ -507,5 +508,3 @@
     ))
 )
 
-
-;;(jogar)
