@@ -24,7 +24,7 @@ João Barbosa, n.º 201901785
 - [**Introdução**](#introdução)
 - [**Instalação e Utilização**](#instalação-e-utilização)
 
----
+
 <a id="acrónimos-e-siglas"></a>
 ### **Acrónimos e Siglas**
 
