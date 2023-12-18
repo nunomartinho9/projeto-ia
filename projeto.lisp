@@ -496,7 +496,7 @@
                 (format stream "~% - Profundidade: ~a" (solucao-no-profundidade (no-caminho-solucao-primeiro solucao)))
                 (format stream "~% - Nos gerados: ~a" (num-nos-gerados solucao))
                 (if (eql algoritmo 'A*)
-                    (format stream "~% - Nos expandidos: ~a" (num-nos-expandidos-a* solucao))
+                    (format stream "~% - Nos expandidos: ~a" (num-nos-gerados solucao))
                     (format stream "~% - Nos expandidos: ~a" (solucao-fechados solucao))
                 )
                 (format stream "~% - Penetrancia: ~f" (penetrancia solucao))
