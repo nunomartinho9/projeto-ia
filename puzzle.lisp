@@ -1,9 +1,9 @@
-;; Código relacionado com o problema
-;; Outra para implementar tudo o que envolve a resolução do 
-;; problema concreto, incluindo a definição
-;; dos operadores e heurísticas, específicos do domínio de aplicação;
+;; Codigo relacionado com o problema
+;; Outra para implementar tudo o que envolve a resolucao do 
+;; problema concreto, incluindo a definicao
+;; dos operadores e heuristicas, especificos do dominio de aplicacao;
 
-;;;; Autor: Nuno Martinho e João Coelho
+;;;; Autor: Nuno Martinho e Joao Coelho
 
 ;; ============= TABULEIROS =============
 
@@ -33,7 +33,7 @@
     (3 61 58 44 65 82 19 4 35 62)
     (33 70 84 40 66 38 92 67 98 97)))
 
-;; ============= FUNÇÕES AUXILIARES =============
+;; ============= FUNCOES AUXILIARES =============
 
 ;;(remover-se #'(lambda (x) (= x 0)) '(1 2 0 2 0 4)) -> (1 2 2 4)
 (defun remover-se (pred lista)

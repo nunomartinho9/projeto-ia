@@ -1,11 +1,11 @@
-;;  Carrega os outros ficheiros de código, 
-;;  escreve e lê ficheiros, e trata da interação com o utilizador
-;;  Autores: Nuno Martinho & João Coelho.
+;;  Carrega os outros ficheiros de codigo, 
+;;  escreve e le ficheiros, e trata da interacao com o utilizador
+;;  Autores: Nuno Martinho e Joao Coelho.
 
 ;; ============ CARREGAR FICHEIROS ============
 
-(load "procura.lisp")
-(load "puzzle.lisp")
+;(load "procura.lisp")
+;(load "puzzle.lisp")
 
 ;; ============= INICIAR =============
 
@@ -40,7 +40,7 @@
                     (quit)
             ))
 
-            (otherwise (progn (format t "Escolha uma opção válida!") (iniciar)))    
+            (otherwise (progn (format t "Escolha uma opcao valida!") (iniciar)))    
         )
     )
 )
@@ -64,11 +64,11 @@
 )
 
 (defun tabuleiros-menu (&optional (i 1) (problemas (ler-tabuleiros)))
-"Mostra os tabuleiros disponíveis no programa."
+"Mostra os tabuleiros disponiveis no programa."
     (cond ((null problemas) 
             (progn
                 (format t "~%|                                 |")
-                (format t "~%|        0 - Voltar atrás         |") 
+                (format t "~%|        0 - Voltar atras         |") 
                 (format t "~%o                                 o")
                 (format t "~%~%>> ")
             )
@@ -82,7 +82,7 @@
                     )
                 )
                 (if (eq i 6)
-                    (format t "~%|    ~a - Tabuleiro ~a (aleatório)  |" i (code-char (+ i 64)))
+                    (format t "~%|    ~a - Tabuleiro ~a (aleatorio)  |" i (code-char (+ i 64)))
                     (format t "~%|    ~a - Tabuleiro ~a              |" i (code-char (+ i 64)))
                 )
                 (tabuleiros-menu (+ i 1) (cdr problemas))
@@ -92,7 +92,7 @@
 )
 
 (defun algoritmos-menu ()
-"Mostra os algoritmos disponíveis no programa."
+"Mostra os algoritmos disponiveis no programa."
     (progn
         (format t "~%o                                    o")
         (format t "~%|      - Escolha o algoritmo -       |")
@@ -111,7 +111,7 @@
 "Mostra uma mensagem para escolher a profundidade."
     (progn
         (format t "~%o                                             o")
-        (format t "~%|      - Defina a profundidade máxima         |")
+        (format t "~%|      - Defina a profundidade maxima         |")
         (format t "~%|                a utilizar -                 |")
         (format t "~%|                                             |")
         (format t "~%|         1 - Valor predefinido (20)          |")
@@ -125,13 +125,13 @@
 )
 
 (defun heuristica-menu ()
-"Mostra uma mensagem para escolher a heurística."
+"Mostra uma mensagem para escolher a heuristica."
     (progn
         (format t "~%o                                                o")
-        (format t "~%|       - Defina a heurística a utilizar -       |")
+        (format t "~%|       - Defina a heuristica a utilizar -       |")
         (format t "~%|                                                |")
-        (format t "~%|           1 - Heurística Enunciado             |")
-        (format t "~%|         2 - Heurística Personalizada           |")
+        (format t "~%|           1 - Heuristica Enunciado             |")
+        (format t "~%|         2 - Heuristica Personalizada           |")
         (format t "~%|                                                |")
         (format t "~%|                  0 - Voltar                    |")
         (format t "~%o                                                o")
@@ -139,20 +139,20 @@
     )
 )
 
-;; ============= NAVEGAÇÃO =============
+;; ============= NAVEGACAO =============
 
 (defun opcao-tabuleiro (&optional (voltar 'iniciar))
-"Recebe a opção de um tabuleiro do menu."
+"Recebe a opcao de um tabuleiro do menu."
     (progn 
         (tabuleiros-menu)
         (let ((opcao (read)))
             (cond ((equal opcao 0) (funcall voltar))
-                  ((not (numberp opcao)) (progn (format t "Escolha uma opção válida!~%")))
+                  ((not (numberp opcao)) (progn (format t "Escolha uma opcao valida!~%")))
                   (T
                     (let ((lista (ler-tabuleiros)))
                         (if (or (< opcao 0) (> opcao (length lista)))
                             (progn 
-                                (format t "Escolha uma opção válida!") (opcao-tabuleiro 'tabuleiros-menu)
+                                (format t "Escolha uma opcao valida!") (opcao-tabuleiro 'tabuleiros-menu)
                             )
                             opcao     
                         )
@@ -170,13 +170,13 @@
 ;; <solucao-a*>::= (<caminho-solucao> <n-abertos> <n-fechados> <n-nos-expandidos>)
 
 (defun opcao-algoritmo ()
-"Recebe a opção de algoritmo do utilizador e executa-o."
+"Recebe a opcao de algoritmo do utilizador e executa-o."
     (progn
         (algoritmos-menu)
         (let ((opcao (read)))
             (cond ((equal opcao '0) (iniciar))
-                    ((or (< opcao 0) (> opcao 4)) (progn (format t "Escolha uma opção válida!~%") (opcao-algoritmo)))
-                    ((not (numberp opcao)) (progn (format t "Escolha uma opção válida!~%")))
+                    ((or (< opcao 0) (> opcao 4)) (progn (format t "Escolha uma opcao valida!~%") (opcao-algoritmo)))
+                    ((not (numberp opcao)) (progn (format t "Escolha uma opcao valida!~%")))
                     (T (let* (
                                 (id-tabuleiro (opcao-tabuleiro))
                                 (problema (escolher-problema id-tabuleiro))
@@ -231,14 +231,14 @@
 )
 
 (defun opcao-profundidade ()
-"Recebe um valor de profundidade máxima do utilizador."
+"Recebe um valor de profundidade maxima do utilizador."
     (if (not (profundidade-menu))
         (let ((opcao (read)))
             (cond ((equal opcao 0) (opcao-tabuleiro))
                   ((equal opcao 1) 20)
                   ((or (not (numberp opcao)) (< opcao 0))
                     (progn
-                        (format t "Escolha uma opção válida!~%")
+                        (format t "Escolha uma opcao valida!~%")
                         (opcao-profundidade 'profundidade-menu)
                     )
                   )
@@ -250,13 +250,13 @@
 
 
 (defun opcao-heuristica ()
-"Recebe um valor que corresponde a heurística escolhida pelo utilizador"
+"Recebe um valor que corresponde a heuristica escolhida pelo utilizador"
     (if (not (heuristica-menu))
         (let ((opcao (read)))
             (cond ((equal opcao '0) (opcao-tabuleiro))
                   ((or (not (numberp opcao)) (< opcao 0) (> opcao 2))
                     (progn
-                        (format t "Escolha uma opção válida!~%")
+                        (format t "Escolha uma opcao valida!~%")
                         (opcao-heuristica 'heuristica-menu)
                     )
                   )
@@ -289,7 +289,7 @@
   )
 
 (defun format-nos-solucao (nos &optional (stream t))
-"Formata o nó-solução."
+"Formata o no-solucao."
   (not (null (mapcar #'(lambda (l)
                          (progn
                           (format stream "~%Pontos: ~a~tProfundidade: ~a~%"(solucao-no-pontos-atual l) (solucao-no-profundidade l))
@@ -300,7 +300,7 @@
 )
 
 (defun format-solucao (resultado &optional (stream t))
-"Formatar a solução completa."
+"Formatar a solucao completa."
   (let* (
         (problema-id (first resultado))
         (algoritmo (second resultado))
@@ -312,21 +312,21 @@
     (format stream "~tProblema ~a~t~tObjetivo: ~a pontos~%" problema-id objetivo)
     (format stream "~tAlgoritmo ~a~%" algoritmo)
     (if opcional
-        (cond ((eq algoritmo 'DFS) (format stream "~tProfundidade máxima: ~a~%" opcional))
-              ((eq algoritmo 'A*) (format stream "~tHeurística: ~a~%" opcional)))
+        (cond ((eq algoritmo 'DFS) (format stream "~tProfundidade maxima: ~a~%" opcional))
+              ((eq algoritmo 'A*) (format stream "~tHeuristica: ~a~%" opcional)))
         
     )
     (if solucao
         (progn
-            (format stream "~%~tUma solução foi encontrada!~%")
+            (format stream "~%~tUma solucao foi encontrada!~%")
             (format stream "===================================================~%")
             (format-nos-solucao (reverse (solucao-nos solucao)))
             (format stream "===========================================================~%")
-            (format stream "Restantes estatísticas guardadas no ficheiro resultados.dat~%")
+            (format stream "Restantes estatisticas guardadas no ficheiro resultados.dat~%")
             (format stream "===========================================================~%")
         )
         (progn
-            (format stream "~%~tNão foi encontrada uma solução!~%")
+            (format stream "~%~tNao foi encontrada uma solucao!~%")
             (format stream "========================================================~%"))
     )
   )
@@ -336,8 +336,8 @@
 
 ;; (ler-tabuleiros)
 (defun ler-tabuleiros ()
-"Lê os tabuleiros no ficheiro problemas.dat."
-    (with-open-file (stream "problemas.dat" :if-does-not-exist nil)
+"Le os tabuleiros no ficheiro problemas.dat."
+    (with-open-file (stream "C:/Users/joaor/Downloads/problemas.dat" :if-does-not-exist nil)
         (do ((result nil (cons next result))
                 (next (read stream nil 'eof) (read stream nil 'eof)))
                     ((equal next 'eof) (reverse result))
@@ -346,7 +346,7 @@
 )
 
 (defun escolher-problema (indice &optional (lista (ler-tabuleiros)))
-"Devolve o problema escolhido através do índice."
+"Devolve o problema escolhido atraves do indice."
     (nth (1- indice) lista)
 )
 
@@ -356,7 +356,7 @@
 )
 
 (defun pontuacao-problema (problema)
-"Devolve a pontuação/objetivo do problema."
+"Devolve a pontuacao/objetivo do problema."
     (second problema)
 )
 
@@ -367,13 +367,13 @@
 
 ;; (print-tabuleiro (ler-tabuleiros))
 (defun print-tabuleiro (indice &optional (stream t))
-"Imprime um tabuleiro do ficheiro problemas.dat (índice começa no 1)."
+"Imprime um tabuleiro do ficheiro problemas.dat (indice comeca no 1)."
     (if (<= indice 0) nil      
         (let ((tabuleiroEscolhido (escolher-problema indice)))
             (progn
                 (format stream "Problema ~a" (nome-problema tabuleiroEscolhido))
                 (format t "~%")
-                (format stream "Pontos necessários: ~d" (pontuacao-problema tabuleiroEscolhido))
+                (format stream "Pontos necessarios: ~d" (pontuacao-problema tabuleiroEscolhido))
                 (format t "~%")
                 (format-tabuleiro (tabuleiro-problema tabuleiroEscolhido))
             )
@@ -399,7 +399,7 @@
 ;; ============= TABULEIRO F =============
 
 (defun escrever-no-ficheiro (dados caminho-ficheiro)
-"Escrever no ficheiro passado como parâmetro."
+"Escrever no ficheiro passado como parametro."
     (with-open-file (stream caminho-ficheiro :direction :output :if-exists :supersede)
         (dolist (item dados)
             (write item :stream stream)
@@ -430,7 +430,7 @@
             (let ((dados-atualizados (substituir-tabuleiro-f dados-ficheiro novo-tabuleiro)))
                 (if dados-atualizados
                     (escrever-no-ficheiro dados-atualizados "problemas.dat")
-                    (format t "Tabuleiro F não gerado!")
+                    (format t "Tabuleiro F nao gerado!")
                 )
             )
         )
@@ -446,7 +446,7 @@
             )
             (append antes (list novo-valor) depois)
         )
-      (format t "O índice do elemento não consta na lista."))
+      (format t "O indice do elemento nao consta na lista."))
 )
 
 (defun substituir-lista-ordenada (dados indice-lista nova-lista)
@@ -454,7 +454,7 @@
         (let ((antes (subseq dados 0 indice-lista))
                 (depois (subseq dados (1+ indice-lista))))
             (append antes (list nova-lista) depois))
-        (format t "O índice da lista está fora dos valores esperados.")
+        (format t "O indice da lista esta fora dos valores esperados.")
     )
 )
 |#
@@ -464,14 +464,16 @@
 
 ;;(ficheiro-estatisticas '(<id-tabuleiro> <algoritmo> <objetivo> <hora-inicio> <solucao> <hora-fim> <profundidade-max>))
 (defun ficheiro-estatisticas (resultado)
-"Ficheiro de resultados estatísticos (solução + dados estatísticos sobre a eficiência)."
+"Ficheiro de resultados estatisticos (solucao + dados estatisticos sobre a eficiencia)."
     (with-open-file (stream "resultados.dat" :direction :output :if-does-not-exist :create :if-exists :append)
         (estatisticas stream resultado)
+        (finish-output stream)
+        (close stream)
     )
 )
 
 (defun duracao (hora-inicio hora-fim)
-"Calcula a diferença entre dois valores temporais."
+"Calcula a diferenca entre dois valores temporais."
     (let* ((diferenca (- hora-fim hora-inicio))
         (milisegundos (/ diferenca 1000))
         (segundos (floor (/ milisegundos 1000)))
@@ -482,7 +484,7 @@
 )
 
 (defun estatisticas (stream resultado)
-"Solução e dados de eficiência para os algoritmos."
+"Solucao e dados de eficiencia para os algoritmos."
     (let* (
             (problema-id (first resultado))
             (algoritmo (second resultado))
@@ -498,23 +500,23 @@
         (format stream "~% - Algoritmo: ~a" algoritmo)
         (format stream "~% - Objetivo: ~a pontos" objetivo)
         (cond ((eql algoritmo 'DFS)
-                (format stream "~% - Profundidade máxima: ~a" opcional))
-            ((eql algoritmo 'A*) (format stream "~% - Heurística: ~a" opcional))
+                (format stream "~% - Profundidade maxima: ~a" opcional))
+            ((eql algoritmo 'A*) (format stream "~% - Heuristica: ~a" opcional))
         )
         (if solucao 
             (progn
-                (format stream "~% - Solução encontrada ~%")
+                (format stream "~% - Solucao encontrada ~%")
                 (format-nos-solucao (reverse (solucao-nos solucao)) stream)
                 (format stream "~% - Pontos: ~a" (solucao-no-pontos-atual (no-caminho-solucao-primeiro solucao)))
                 (format stream "~% - Profundidade: ~a" (solucao-no-profundidade (no-caminho-solucao-primeiro solucao)))
-                (format stream "~% - Nº nós gerados: ~a" (num-nos-gerados solucao))
+                (format stream "~% - Nos gerados: ~a" (num-nos-gerados solucao))
                 (if (eql algoritmo 'A*)
-                    (format stream "~% - Nº nós expandidos: ~a" (num-nos-expandidos-a* solucao))
-                    (format stream "~% - Nº nós expandidos: ~a" (solucao-fechados solucao))
+                    (format stream "~% - Nos expandidos: ~a" (num-nos-expandidos-a* solucao))
+                    (format stream "~% - Nos expandidos: ~a" (solucao-fechados solucao))
                 )
-                (format stream "~% - Penetrância: ~f" (penetrancia solucao))
-                (format stream "~% - Fator de ramificação média: ~f" (fator-ramificacao-media solucao))
-                (format stream "~% - Duração: ~a" tempo)
+                (format stream "~% - Penetrancia: ~f" (penetrancia solucao))
+                (format stream "~% - Fator de ramificacao media: ~f" (fator-ramificacao-media solucao))
+                (format stream "~% - Duracao: ~a" tempo)
                 (format stream "~%~%~%")
             )
         )
