@@ -64,14 +64,14 @@ Para que o programa possa funcionar é necessário possuir um *IDE* ou um interp
 
 Se os passos anteriores forem seguidos deverá aparecer o menu inicial do programa:
 
-![Untitled](imagens/Untitled.png)
+![Untitled](manuais/manual_utilizador/imagens/Untitled.png)
 
 > Utilização
 > 
 
 Para iniciar o programa é necessário executar a função (Jogar).
 
-![Untitled](imagens/Untitled%201.png)
+![Untitled](manuais/manual_utilizador/imagens/Untitled%201.png)
 
 Para continuar a navegar pelos menus basta apenas premir um dos algarismos presentes no ecrã e clicar na tecla ***Enter.***
 
@@ -82,13 +82,13 @@ Poderá utilizar a opção **1 - Visualizar problemas** para visualizar todos os
 
 Se selecionou a opção **2 - Resolver um problema** irá encontrar o seguinte ecrã:
 
-![Untitled](imagens/Untitled%202.png)
+![Untitled](manuais/manual_utilizador/imagens/Untitled%202.png)
 
 Escolha um algoritmo de procura dentro dos apresentados introduzindo o número correspondente.
 
 Após a escolha do algoritmo poderá selecionar um dos tabuleiros presentes no ficheiro problemas.dat:
 
-![Untitled](imagens/Untitled%203.png)
+![Untitled](manuais/manual_utilizador/imagens/Untitled%203.png)
 
 ```lisp
 Atenção: em alguns algoritmos poderá ser-lhe pedido para introduzir um valor de
@@ -98,8 +98,8 @@ interaja como nos menus anteriores e siga as instruções.
 
 Ao selecionar um dos tabuleiros será calculada e apresentada a solução respetiva tanto no ecrã como num ficheiro externo resultados.dat criado automaticamente pelo programa.
 
-![Untitled](imagens/Untitled%204.png)
+![Untitled](manuais/manual_utilizador/imagens/Untitled%204.png)
 
-![Untitled](imagens/Untitled%205.png)
+![Untitled](manuais/manual_utilizador/imagens/Untitled%205.png)
 
-![Untitled](imagens/Untitled%206.png)
+![Untitled](manuais/manual_utilizador/imagens/Untitled%206.png)
